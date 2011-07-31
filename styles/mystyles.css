@@ -1,0 +1,80 @@
+div #last_fm_info a, div #last_fm_album_info a {
+	color:#3F3F3F;
+	text-decoration:none;
+}
+
+#last_fm_info {
+	min-height:165px;
+}
+
+div #similar_last_fm_artists > a:hover {
+	text-decoration:underline;
+}
+
+.amazon_alb {
+	width: 130px;
+/*	float: left;
+	margin: 5px;
+	display:inline;
+	clear:none;
+	height:180px;
+*/}
+
+.amazon_alb a {
+	color: #3F3F3F;
+	text-decoration: none;
+/*	font-size:11px;*/
+/*	line-height:14px;*/
+}
+
+.amazon_alb a:hover {
+	text-decoration: underline;
+}
+
+/*.amazon_text {
+	white-space:normal;
+	color: #3F3F3F;
+	text-decoration: none;
+}
+
+.amazon_text:hover {
+	text-decoration:underline;
+}
+
+#amazon_links {
+	white-space:nowrap;
+	overflow-x:auto;
+	height:auto;
+	height:170px;
+}
+*/
+
+.small_cc {
+	font-size:11px;
+	color:#666;
+	font-style:italic;
+	margin-left:25px;
+}
+
+.ext_src {
+	margin-top:10px;
+	float: right;
+	font-size: 11px;
+	text-align: center;
+}
+
+.at_amazon {
+	margin-top: 10px;
+	padding-bottom: 5px;
+	border-bottom: 1px solid #BBB;
+	margin-top: 30px;
+	width: auto;
+	font-weight:bold;
+}
+
+.bio_text {
+	margin-left: 185px;
+	padding-bottom: 10px;
+	margin-bottom: 10px;
+	border-bottom: 1px solid #BBB;
+}

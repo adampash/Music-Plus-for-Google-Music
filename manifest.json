@@ -1,0 +1,30 @@
+{
+  "name": "Music Plus for Google Music",
+  "version": "0.1",
+
+  "description": "Music Plus adds controls, notifications, Last.fm support, downloading, global keyboard shortcuts, and lyrics to Google Music.",
+  "icons": { "16" : "images/google.fm.16.png",
+ 			"48" : "images/google.fm.48.png",
+			"128" : "images/google.fm.128.png"},
+  "homepage_url": "http://adampash.com/",
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "css": ["styles/mystyles.css"],
+      "js": ["scripts/jquery-1.6.1.min.js", "scripts/jquery.hotkeys.js", "scripts/contentChange.js", "scripts/track.js", "scripts/lyrics.js", "scripts/myscript.js", "scripts/shortcuts.js", "scripts/scrobble.js"]
+    }
+  ],
+	"background_page": "background.html",
+	"permissions": [
+	  "history",
+	  "tabs", 
+	  "<all_urls>",
+	  "notifications"
+	],
+	"browser_action": {
+    "default_icon": "images/google.fm.png", 
+    "default_title": "Google Music",      
+    "default_popup": "popup.html"       
+  },
+  "options_page": "options.html"
+}

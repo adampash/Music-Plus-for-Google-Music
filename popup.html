@@ -1,0 +1,665 @@
+<html>
+<head>
+	<script src='scripts/jquery-1.6.1.min.js'></script>
+	<script src='scripts/player_action.js'></script>
+	<script>
+
+		var CONTENT_SCRIPT_TAB_ID = localStorage["tabID"];
+		var timeout;
+		localStorage['notification_visible'] = true;
+		$(window).unload(function() {
+		  localStorage['notification_visible'] = false;
+		});
+		window.setInterval(popup_prep, 1000);
+		popup_prep();
+		
+		function open_g_music() {
+			localStorage['notification_visible'] = false;
+			chrome.tabs.create({url: "http://music.google.com/"});
+			window.close();
+		}
+		
+		function popup_prep() {
+			// $("#popup").html("Music is playing1");
+			// localStorage["tabID"] = 'closed';
+			console.log(localStorage["tabID"]);
+			if (localStorage["tabID"] === undefined || localStorage["tabID"] == 'closed') {
+				console.log("Open a new tab: " + localStorage["tabID"]);
+				$('#artist').html('You need to <a href="#" onclick="open_g_music();">open a new Google Music tab</a>.');
+				// chrome.tabs.create({url: "http://music.google.com/"});
+				// chrome.tabs.onRemoved.addListener(function(integer tabId, object removeInfo)
+				// window.close();
+			}
+			else {
+				// console.log('sending request to tab to set popup info');
+				chrome.tabs.sendRequest(parseInt(localStorage["tabID"]), {'action' : 'set_popup', 'url' : "none", 'data' : 'arbs'}, 
+					function(response) {
+						if (chrome.extension.lastError) {
+							$('#artist').html('You need to <a href="#" onclick="open_g_music();">open a new Google Music tab</a>.');
+							// chrome.tabs.create({url: "http://music.google.com/"});
+							console.log('there was an error connecting to the tab');
+							// window.close();
+						}
+						else {
+							// console.log("response is back " + response.song_title);
+							// $("#popup").html(response.artist + " - " + response.song_title + " " + response.album_art);
+							$("#song_title").html(response.song_title);
+							$("#artist").html(response.artist);
+							if (response.album_art.split('default_album_med').length > 1 || response.album_art == 'http://undefined') {
+								response.album_art = 'http://music.google.com/music/default_album_med.png';
+							}
+							// console.log('response.status: ' + response.status);
+							if (response.status == 'Play') {
+								toggle_play('paused');
+							}
+							else if (response.status == 'Pause') {
+								toggle_play('playing');
+							}
+							$("#album_art_img").attr('src', response.album_art);
+							$("#current_time").html(response.current_time);
+							$("#total_time").html(response.total_time);
+							set_slider(response.current_time, response.total_time);
+							// chrome.browserAction.setIcon({ path: response.album_art }); // Cool in theory, but button a little too small
+						}
+					}
+				);
+			}
+			// console.log("made it past response");
+			// console.log("Call again in 1 second");
+			// clearTimeout(timeout);
+			// timeout = setTimeout(popup_prep, 1000);
+			// console.log(CONTENT_SCRIPT_TAB_ID);		    
+		}
+				
+		function set_status(status) {
+			console.log('swap play and pause buttons');
+			
+		}
+		
+		function set_slider(current_time, total_time) {
+			var total_width = 223;
+			var total_secs = (parseInt(total_time.split(":")[0]) * 60) + parseInt(total_time.split(":")[1]);
+			var current_secs = (parseInt(current_time.split(":")[0]) * 60) + parseInt(current_time.split(":")[1]);
+			var width = Math.round((current_secs/total_secs) * total_width);
+			$('#played_slider').attr('style', 'width:' + (width - 2) + 'px;');
+			$('.goog-slider-thumb').attr('style', 'left:' + (width) + 'px;');
+			$('.goog-slider-thumb').show();
+		}
+      	
+		function onRequest(request, sender) {
+	        // if (request.action == 'set_tab_id') {
+	        //   set_tab_id(request.tabID);
+	        // }
+		};
+		
+		// Wire up the listener.
+		chrome.extension.onRequest.addListener(onRequest);
+		
+		var breadcrumb = [];
+		function toggle_navigation() {
+			breadcrumb.pop();
+			if (breadcrumb.length < 1) {				
+				if ($("#navigate").is(':visible') && $('.tab-text').text() == "My Library") {
+					close_nav();
+				}
+				else {
+					$('.tab-text').text("My Library");
+					$('#navigate').html('<div class="album_row bold" onclick="fetch_nav_item(\'artists\', \'\', \'Artists\', false);" title="artists">Artists</div>' +
+					'<div class="album_row bold" onclick="fetch_nav_item(\'albums\', \'\', \'Albums\', false);" title="albums">Albums</div>'); 
+					// '<div class="album_row bold" onclick="fetch_nav_item(\'all\', \'\', \'All Songs\', false);" title="all">Songs</div>'
+					// '<div class="album_row bold" onclick="fetch_nav_item(\'genres\', \'\', \'Genres\', false);" title="genres">Genres</div>');
+					$("#navigate").slideDown();
+					$('#close_nav').show();
+					activate_search();
+				}
+			}
+			else {
+				var nav_back = breadcrumb.pop();
+				fetch_nav_item(nav_back[0], nav_back[1], nav_back[2], true);
+			}
+		}
+		
+		function close_nav() {
+			$('.tab-text').html('<span onclick="player_action(\'currently_playing\')">Now Playing</span>');
+			$("#navigate").slideUp();
+			$('#close_nav').hide();
+			breadcrumb = [];
+			$('#search').hide();
+		}
+				
+		function fetch_nav_item(type, id, display_type, go_back) {
+			console.log('time to fetch nav item');
+			$('#loadingOverlay').toggle();
+			$('.tab-text').text(decodeURIComponent(display_type));
+			breadcrumb.push([type, id, display_type]);
+			// var url = $(obj).attr('title');
+			// // console.log($(obj).attr('title'));
+			// var type = "playlistSelected";
+			// var script = "'playlistSelected', this, {id: '" + url + "'}";
+			// script = script.replace(/&quote;/g, "'");
+			if (id == '') {
+				id = -1;
+			}
+			chrome.tabs.sendRequest(parseInt(localStorage["tabID"]), {'action' : 'nav_to', 'type' : type, 'id' : id, 'go_back' : go_back}, 
+				function(response) {
+					$('#loadingOverlay').toggle();
+					if (chrome.extension.lastError) {
+						chrome.tabs.create({url: "http://music.google.com/"});
+						console.log('there was an error connecting to the tab');
+						window.close();
+					}
+					else if (response.indexOf('"albums":') != -1) {
+						activate_search();
+						// console.log("response is: " + response);
+						var albums = $.parseJSON(response);
+						console.log('call back');
+						// console.log(albums.albums);
+						$('#navigate').html(" ");
+						$('#navigate').scrollTop(0);
+						$.each(albums.albums, function(index, album) {
+							// console.log(album.album.title);
+							if (album.album.art.split('default_album_med').length > 1) album.album.art = 'music.google.com/music/default_album_med.png';
+							// console.log(album.album.id);
+							var row = '<div class="album_row" onclick="fetch_album(\'' + escape(album.album.id) + '\');"><img width="32" height="32" src="http://' + decodeURI(album.album.art) + '" /><b>' + decodeURIComponent(album.album.title) + '</b><br>' + decodeURI(album.album.artist) + '</div>';
+							$('#navigate').append(row);
+						});
+					}
+					else if (response.indexOf('"artists":') != -1) {
+						// console.log('here now');
+						activate_search();
+						// console.log(response);
+						var artists = $.parseJSON(response);
+						$('#navigate').html(" ");
+						$('#navigate').scrollTop(0);
+ 		 				$.each(artists.artists, function(index, artist) {
+							if (artist.artist.title == '') {
+								return;
+							}
+							if (artist.artist.art.split('default_album_med').length > 1) artist.artist.art = 'music.google.com/music/default_album_med.png';
+							var row = '<div class="album_row" onclick="fetch_nav_item(\'artistSelected\', \'' + decodeURI(artist.artist.id) + '\', \'' + decodeURI(artist.artist.title) + '\', false);"><img width="32" height="32" src="http://' + decodeURI(artist.artist.art) + '" /><b>' + decodeURIComponent(artist.artist.title) + '</b><br></div>';
+							$('#navigate').append(row);
+						});
+					}
+					else {
+						console.log('no matches');
+					}
+				}
+			);
+			console.log('request made');	
+			$('#search').hide();
+		}
+		
+		function activate_search() {
+			$('#search').show();
+			$("#search").select();
+		}
+		
+		function fetch_album(id) {
+			$('#loadingOverlay').toggle();
+			activate_search();
+			breadcrumb.push(['', id, '']);
+			// script_text = script_text.replace(/&quote;/g, "'");
+			console.log(id);
+			chrome.tabs.sendRequest(parseInt(localStorage["tabID"]), {'action' : 'nav_to', 'id' : id, 'type' : 'albumSelected'}, 
+				function(response) {
+					$('#loadingOverlay').toggle();
+					if (chrome.extension.lastError) {
+						chrome.tabs.create({url: "http://music.google.com/"});
+						console.log('there was an error connecting to the tab');
+						window.close();
+					}
+					else {
+						console.log(response);
+						var album = $.parseJSON(response);
+						// console.log(album);
+						$('#navigate').html(" ");
+						$('#navigate').scrollTop(0);
+						var album_page = '<div class="big_art" style="position:fixed; margin:10px;">' +
+											'<img src="http:' + decodeURI(album.album.art) + '" height="128" width="128">' +
+										'</div>' +
+										'<div class="track_list">';
+						$.each(album.album.tracks, function(index, track) {
+							// console.log(track);
+							album_page += '<div class="album_row ind_track" id="' + track.track.song_id + '" ondblclick="play_selected_track(this)">' + decodeURI(track.track.title) + '</div>';
+						});
+						album_page += '</div>';
+						$('#navigate').append(album_page);
+						$('.tab-text').text(decodeURI(album.album.title));
+					}
+				}
+			);
+		}
+		
+		function play_selected_track(obj) {
+			console.log('play selected ');
+			// console.log($(obj).id);
+			var song_id = $(obj).attr('id');
+			var script_text = "SJBpost('playSelected')";
+			chrome.tabs.sendRequest(parseInt(localStorage["tabID"]), {'action' : 'select_and_play', 'script' : script_text, 'song_id' : song_id}, 
+				function(response) {
+					console.log('response from calling the play selected track method');
+					// popup_prep();
+				});
+		}
+			
+	</script>
+	<!-- <link rel="stylesheet" type="text/css" href="styles/popup.css" /> -->
+	<style>
+		#popup {
+			width:415px;
+			height:218px;
+			margin:0;
+			padding:0;
+		/*	background:#666;*/
+		/*	-webkit-border-radius: 20px;*/
+		}
+
+		#player {
+			min-width:375px;
+			min-height:160px;
+			font-family: 'Proxima Nova',arial,sans-serif;
+			padding:35px 30px 22px 10px;
+		/*	background:#666;*/
+			position:absolute;
+			top:0;
+		}
+		body {
+			margin:0;
+			padding:0;
+			-webkit-border-radius: 20px;
+			font-family: 'Proxima Nova',arial,sans-serif;
+		}
+
+		.big_art {
+			float:left;
+			margin-right:20px;
+			border: 1px solid #A7A7A7;
+			padding:1px;
+			background: no-repeat url(images/default_album_med.png);
+		}
+
+		#song_title, #artist {
+			color:#666;
+			font-size:15px;
+			margin-bottom:5px;
+		}
+		#song_title {
+			font-weight:bold;
+		}
+
+		#playPause.goog-flat-button {
+			background: no-repeat url(images/sprites.png) -622px -228px
+		}
+
+		#playPause.goog-flat-button:hover {
+			background: no-repeat url(images/sprites.png) -84px -174px
+		}
+
+		#playPause.goog-flat-button-checked {
+			background: no-repeat url(images/sprites.png) -300px -132px;
+		}
+
+		#playPause.goog-flat-button-checked:hover {
+			background: no-repeat url(images/sprites.png) -581px -428px;
+		}
+
+		#playPause.goog-flat-button-checked {
+		background: no-repeat url(images/sprites.png) -300px -132px;
+		}
+
+		#rew.goog-flat-button {
+			background: no-repeat url(images/sprites.png) -226px -337px;
+		}		
+
+		#rew.goog-flat-button:hover {
+			background: no-repeat url(images/sprites.png) -300px -428px;
+		}
+
+		#ff.goog-flat-button {
+			background: no-repeat url(images/sprites.png) -96px -116px;
+		}
+
+		#ff.goog-flat-button:hover {
+			background: no-repeat url(images/sprites.png) -574px -292px;
+		}
+
+		.goog-flat-button {
+			width: 43px;
+			height: 48px;
+			outline: none;
+			margin: -1px 0 0 6px;
+			cursor: pointer;
+			float: left;
+		}
+
+		#controls {
+			position:absolute;
+			bottom:0px;
+			left:0px;
+			background: url("images/bg_now_playing_bar_pattern.png") repeat-x;
+			width: 415px;
+			height: 45px;
+			outline: none;
+			z-index:1;
+		}
+
+		#time {
+			font-size: 0.75em;
+			font-weight: bold;
+			line-height: 20px;
+			color:white;
+			text-align: right;
+		}
+
+		.player-middle {
+			position:relative;
+		}
+
+		#played_slider {
+			background-color: white;
+			width: 0;
+			height: 2px;
+			padding-left: 1em;
+		/*	cursor: pointer;*/
+		}
+
+		#slider {
+			outline: none;
+		/*	cursor: pointer;*/
+			height: 2px;
+			padding: 5px 0;
+			margin-top: 22px;
+		}
+
+		.goog-slider-track .goog-slider-thumb {
+			background: no-repeat url(images/sprites.png) -642px -296px;
+		}
+		/*.goog-slider-track .goog-slider-thumb:hover {
+			background: no-repeat url(images/sprites.png) -250px 0;
+		}
+		*/
+		.goog-slider-track .goog-slider-thumb {
+			background: no-repeat url(images/sprites.png) -642px -296px;
+		}
+
+		.goog-slider-thumb {
+			width: 14px;
+			height: 14px;
+			margin-top:-8px;
+			position:relative;
+		}
+		.playing-progress-background {
+			background-color: #7f7f7f;
+			height: 2px;
+		}
+
+		.playing-indicator {
+			background-image: url('images/now_playing_normal.gif');
+			width: 20px;
+		}
+
+		.paused-indicator {
+			width: 20px;
+			background-image: url('images/pause_normal.gif');
+		}
+
+		#song_indicator {
+			float: right;
+		/*	margin: 3px -15px 0 20px;*/
+			height: 16px;
+		}
+
+		#time_and_slider {
+			position:absolute;
+			right:20px;
+			left:172px;
+			bottom:3px;
+			z-index:1000;
+		}
+
+		#song_info {
+			margin-top:18px;
+		}
+		#nav_buttons {
+		/*	-webkit-transform: rotate(-90deg);*/
+			position:absolute;
+			z-index:100;
+			background:url(images/slash.png);
+			width:100%;
+			border-bottom:1px solid #4C4C4C;
+		}
+
+		#navigate {
+			height:147px;
+			background:white;
+			width:415px;
+			overflow-y:auto;
+			overflow-x:none;
+			position:absolute;
+			top:25px;
+			z-index:1000;
+			padding:0;
+		}
+
+		#close_nav {
+			position:absolute;
+			top:30px;
+			right:20px;
+			z-index:10000;
+			cursor:pointer;
+		}
+
+		.nav_item {
+			font-weight:bold;
+			cursor:pointer;
+		}
+
+		.album_row {
+			height:35px;
+			padding:8px 0px 0px 7px;
+			width:100%;
+			border-bottom:1px solid #ccc;
+			font-size:13px;
+			color:#404040;
+			cursor:pointer;
+			overflow:hidden;
+			white-space:nowrap;
+		/*	font-weight:bold;*/
+		}
+
+		.album_row.bold {
+			font-weight:bold;
+		}
+
+		.album_row:hover {
+			background:#E5E5E5;
+		}
+
+		.album_row img {
+			float:left;
+			margin-right:5px;
+		}
+
+		.track_list {
+			font-size:12px;
+			color: #666;
+			font-weight:lighter;
+			overflow-x:hidden;
+			margin-left:155px;
+		}
+
+		.ind_track {
+			padding:8px 2px 8px 5px;
+			cursor:pointer;
+			height:18px;
+			-webkit-user-select: none;
+
+		}
+
+		.ind_track:hover {
+			background:#E5E5E5;
+		}
+
+		#navigate {
+			overflow-x:hidden;
+		}
+
+		.breadcrumb-part {
+			background: no-repeat url(images/sprites.png) -492px -360px;
+			width: 41px;
+			height: 24px;
+			float: left;
+			cursor: pointer;
+		}
+
+		.breadcrumb-part:hover {
+			background: no-repeat url(images/sprites.png) -574px -268;
+		}
+
+		.tab-text {
+			line-height: 27px;
+			padding: 0 10px;
+			border-bottom: 24px solid #4C4C4C;
+			border-right: 24px solid transparent;
+			color: white;
+			font-size: 12px;
+			font-weight: 600;
+			height: 0;
+			cursor: default;
+			display: inline-block;
+			text-transform:uppercase;
+		}
+
+		.regularLoadingOverlay {
+			opacity: 0.7;
+			filter: 'alpha(opacity=70)';
+			background: white url('images/Spinner_48.gif') no-repeat center center;
+		}
+
+		#loadingOverlay {
+			position: absolute;
+			top: 25px;
+			left: 0;
+			right: 0;
+			bottom: 46px;
+			z-index:10000;
+		}
+
+		#search {
+			float:right;
+			color:#333;
+		}
+	</style>
+</head>
+<body>
+	<div id="popup">
+		<div id="nav_buttons" role="button">
+			<div class="breadcrumb-part" onclick="toggle_navigation();"></div>
+			<span class="tab-text">Now Playing</span>
+			<input type="text" value="Filter" id="search" style="display:none;" />
+		</div>
+		<div id="loadingOverlay" style="display: none;" class="regularLoadingOverlay"></div>
+		<div id="close_nav" style="display:none;" title="Click to close navigation" onclick="close_nav();">X</div>
+		<div id="navigate" style="display:none;">
+			<!-- <div class="album_row bold" onclick="fetch_nav_item('start', '', 'New and Recent', false);" title="start">New and Recent</div> -->
+			<div class="album_row bold" onclick="fetch_nav_item('artists', '', 'Artists', false);" title="artists">Artists</div>
+			<div class="album_row bold" onclick="fetch_nav_item('albums', '', 'Albums', false);" title="albums">Albums</div>
+			<!-- <div class="album_row bold" onclick="fetch_nav_item('all', '', 'All Songs', false);" title="all">Songs</div> -->
+			<!-- <div class="album_row bold" onclick="fetch_nav_item('playlists');" title="playlists">Playlists</div> -->
+			<!-- <div class="album_row bold" onclick="fetch_nav_item('genres', '', 'Genres', false);" title="genres">Genres</div> -->
+			<!-- <div class="album_row bold" onclick="fetch_nav_item(this);">Etc.</div> -->
+		</div>
+		
+		<div id="player">
+			<div id="album_art" class="big_art">
+				<img id="album_art_img" src="http://music.google.com/music/default_album_med.png" height="128" width="128" />
+			</div>
+			<div id="song_indicator" class="paused-indicator"></div>
+			<div id="song_info">
+				<div id="song_title"></div>
+				<div id="artist"></div>
+			</div>
+			<div id="time_and_slider">
+				<div class="player-middle">
+					<div id="slider" class="goog-slider-horizontal goog-slider-track" role="slider" tabindex="0">
+						<div class="playing-progress-background">
+							<div id="played_slider"></div>
+						</div>
+						<div class="goog-slider-thumb" style="top: 21px; left: 15px; display:none;"></div>
+					</div>
+				</div>	
+				<div id="time">
+					<span id="current_time">0:00</span> / <span id="total_time">0:00</span>
+				</div>
+			</div>
+			<div id="controls">
+				<div id="rew" class="goog-flat-button goog-inline-block" title="Previous song" role="button" style="-webkit-user-select: none; " aria-disabled="false" aria-pressed="false" onclick="player_action('prevSong'); "></div>
+				<div id="playPause" class="goog-flat-button goog-inline-block" title="Play" role="button" style="-webkit-user-select: none; " aria-disabled="false" aria-pressed="false" onclick="player_action('playPause');"></div>
+				<div id="ff" class="goog-flat-button goog-inline-block" title="Next song" role="button" style="-webkit-user-select: none; " aria-disabled="false" aria-pressed="false" onclick="player_action('nextSong');"></div>
+			</div>
+		</div>
+
+	</div>
+	<script>
+		  	$("#search").change( function () {
+		        var filter = $(this).val();
+		        if(filter) {
+				  console.log(filter);
+		          // this finds all links in a list that contain the input,
+		          // and hide the ones not containing the input while showing the ones that do
+		          $("#navigate").find(".album_row:not(:Contains(" + filter + "))").hide();
+		          $("#navigate").find(".album_row:Contains(" + filter + ")").show();
+		        } else {
+		          $("#navigate").find(".album_row").show();
+		        }
+		        return false;
+		      });
+		    $("#search").keyup(function(e) {
+		        // fire the above change event after every letter
+				var code = (e.keyCode ? e.keyCode : e.which);
+				if (code == 13) {
+					console.log($(".album_row.ind_track"));
+					if ($(".album_row.ind_track").length == 0) {
+						$(".album_row:visible").first().click();
+					}
+					else {
+						$(".album_row:visible").first().dblclick();
+					}
+					e.preventDefault();
+				}
+				else {
+					$(this).change();
+				} 
+		    });
+			$("#search").submit(function() {
+				console.log('you submitted');
+			});
+		
+			  // custom css expression for a case-insensitive contains()
+			  jQuery.expr[':'].Contains = function(a,i,m){
+			      return (a.textContent || a.innerText || "").toUpperCase().indexOf(m[3].toUpperCase())>=0;
+			  };
+			
+		// $("#popup").html("Music is playing");
+		// $("#slider").click(function(e){
+		// 	console.log('scrub');
+		// 	var x = e.pageX - this.offsetLeft - 173;
+		// 	var y = e.pageY - this.offsetTop;
+		// 
+		//     console.log('pixels from left: ' + x);
+		// 	var total = 224;
+		// 	var percentage = (x/total);
+		// 	console.log('move to the percentage of :' + (x/total) * 100 + 'percent');
+		// 	chrome.tabs.sendRequest(parseInt(localStorage["tabID"]), {'action' : 'scrub', 'percentage' : percentage}, 
+		// 		function(response) {
+		// 			$('#loadingOverlay').toggle();
+		// 			if (chrome.extension.lastError) {
+		// 				chrome.tabs.create({url: "http://music.google.com/"});
+		// 				console.log('there was an error connecting to the tab');
+		// 				window.close();
+		// 			}
+		// 	
+		//    });
+	</script>
+</body>
+</html>
