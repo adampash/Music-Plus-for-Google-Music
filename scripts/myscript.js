@@ -2,8 +2,13 @@ var last_fm_logo = chrome.extension.getURL('images/lastfm.gif');
 var amazon_logo = chrome.extension.getURL('images/amazon.jpeg');
 var notificaiton_html = 'popup.html';
 
+var consoleLog = function(msg){
+	// uncomment for "dev mode"
+	//console.log(msg);
+};
+
 if (localStorage['download'] == 'true' && window.location.host == 'music.google.com') {
-	console.log('insert download button');
+	consoleLog('insert download button');
 	insert_download_button();
 }
 
@@ -18,13 +23,13 @@ function restore_settings() {
 }
 
 function check_url() {
-	console.log('check url');
+	consoleLog('check url');
 	restore_settings();
 	if (window.location.host == 'music.google.com') {
-		console.log('setting tab id');
+		consoleLog('setting tab id');
 		chrome.extension.sendRequest({'action' : 'set_tab_id'}, function(response) {
 			localStorage["tabID"] = response;
-			console.log('tab id is ' + response);
+			consoleLog('tab id is ' + response);
 		});
 		if (window.location.hash != '' && localStorage['bios'] == 'true') {
 			var type = parse_hash();
@@ -46,7 +51,7 @@ function check_url() {
 
 // last.fm api key: a7c555c150c11623a0fced6e11c1f4fe
 function prepare_fetch(type) {
-	console.log('prepare fetch');
+	consoleLog('prepare fetch');
 	var api_key = 'a7c555c150c11623a0fced6e11c1f4fe'
 	var last_url = '';
 	var last_url2 = '';
@@ -55,7 +60,7 @@ function prepare_fetch(type) {
 		last_url = 'http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=' + encodeURIComponent(artist) + '&api_key=' + api_key;
 	}
 	else if (type == 'al') {
-		console.log('searching album info as well');
+		consoleLog('searching album info as well');
 		var artist_and_album = ($('.tab-text a')[0].innerText);
 		var artist = artist_and_album.split(' - ')[0];
 		var album = artist_and_album.split(' - ')[1];
@@ -67,14 +72,14 @@ function prepare_fetch(type) {
 		chrome.extension.sendRequest({'action' : 'fetch_url', 'url' : last_url}, on_artist_text);
 	}
 	if (last_url2 != '') {
-		console.log('searching album info');
+		consoleLog('searching album info');
 		chrome.extension.sendRequest({'action' : 'fetch_url', 'url' : last_url2}, on_album_text);
 	}
 }
 
 function on_artist_text(data) {
 	// alert(data);
-	console.log("artist text");
+	consoleLog("artist text");
 	var xml_doc = $.parseXML(data);
 	var $xml = $( xml_doc );
 	var container;
@@ -125,7 +130,7 @@ function on_artist_text(data) {
 	});
 	if ($('.artistViewTable > tbody').children().length == 0) {
 		$('.artistViewTable').html('You don\'t currently have any music by this artist.<div class="at_amazon">' + $('.tab-text > a').text() + ' MP3s available at <img src="' + amazon_logo + '" height="22px" style="margin-bottom:-9px; margin-left:-1px;" /></div><div id="amazon_links"></div>');
-		console.log("Search Amazon");
+		consoleLog("Search Amazon");
 		search_amazon($('.tab-text > a').text());
 	}
 }
@@ -133,14 +138,14 @@ function on_artist_text(data) {
 function search_amazon(artist) {
 	var url = 'http://free.apisigning.com/onca/xml?Service=AWSECommerceService&Version=2010-11-01&Operation=ItemSearch&SearchIndex=MP3Downloads&Keywords=' + encodeURIComponent(artist) + '&ResponseGroup=ItemAttributes,Images,Tracks&AWSAccessKeyId=0YNM9NQ21B7TCP1XDH82';
 	// http://free.apisigning.com/onca/xml?Service=AWSECommerceService&Version=2010-11-01&Operation=ItemSearch&SearchIndex=MP3Downloads&Keywords=' + encodeURIComponent(artist) + '&AWSAccessKeyId=0YNM9NQ21B7TCP1XDH82';
-	console.log(url);
+	consoleLog(url);
 	chrome.extension.sendRequest({'action' : 'fetch_url', 'url' : url}, on_amazon);
 }
 
 function on_amazon(data) {
 	// alert(data);
-	console.log("amazon response is here");
-	// console.log(data);
+	consoleLog("amazon response is here");
+	// consoleLog(data);
 	var amazon_links = '';
 	$(data).find('item').each(function(){
 		var id = $(this).find('ASIN').text();
@@ -154,7 +159,7 @@ function on_amazon(data) {
 		var type = $(this).find('ItemAttributes > ProductTypeName').text();
 		type = type.split('_')[2];
 		amazon_links = amazon_links + '<div class="amazon_alb album-container"><a href="' + url + '?tag=adapas-20" target="_blank" class="fade-out-parent"><img src="' + img + '" height="124" width="124" class="albumImage" style="margin-bottom:-14px;" onmouseover="SJBpost(\'albumArtEnter\', this); onmouseout="SJBpost(\'albumArtLeave\', this);"" /><br /><span class="amazon_text browseAlbumTitle fade-out-content">' + title + '<br /></span><div class="fade-out-effect"></div><span class="browseSubtext" style="float:left;">[' + type + ']</span></div>';
-		// console.log(id);
+		// consoleLog(id);
 		// var title = $(this).find('title').text();
 		// var url = $(this).find('url').text();
 		// $('<div class="items" id="link_'+id+'"></div>').html('<a href="'+url+'">'+title+'</a>').appendTo('#page-wrap');
@@ -170,7 +175,7 @@ function on_amazon(data) {
 	// var xml_doc = $.parseXML(data);
 	// var $xml = $( xml_doc );
 	// var item = $xml.find('item:first').text();
-	// console.log(item);
+	// consoleLog(item);
 	// var items = $xml.find("item");
 	// alert($xml.find("item").text());
 	// $.each(items, function(index, item) {
@@ -179,8 +184,8 @@ function on_amazon(data) {
 }
 
 function on_album_text(data) {
-	console.log('album back');
-	// console.log(data);
+	consoleLog('album back');
+	// consoleLog(data);
 	var xml_doc = $.parseXML(data);
 	var $xml = $( xml_doc );
 	var container;
@@ -246,7 +251,7 @@ function scrobble() {
 
 function set_popup(data, callback) {
 	Track.now_playing();
-	console.log(Track.status);
+	consoleLog(Track.status);
 	callback({'song_title': Track.song_title, 'artist' : Track.artist, 'album_art' : Track.album_art, 'current_time' : Track.current_time, 'total_time' : Track.total_time, 'status' : Track.status});
 }
 
@@ -260,23 +265,23 @@ function nav_to(request, callback) {
 	}
 	var type = request.type;
 	var id = decodeURI(unescape(request.id));
-	console.log(type);
-	console.log(id);
-	// console.log(script_text);
+	consoleLog(type);
+	consoleLog(id);
+	// consoleLog(script_text);
 	// append_script(script_text);
-	// console.log(script);
+	// consoleLog(script);
 	var element = null;
 	if (request.go_back) {
-		console.log('this is a history request');
+		consoleLog('this is a history request');
 		element = document.getElementsByClassName('breadcrumb-part')[0];
 	}
 	else {
 		if (id != -1) {
-			console.log('get element by id');
+			consoleLog('get element by id');
 			element = document.getElementById(id);
 		}
 		else {
-			console.log('get element by type');
+			consoleLog('get element by type');
 			element = document.getElementById(type);
 		}
 		if (type == 'albumSelected') {
@@ -288,13 +293,13 @@ function nav_to(request, callback) {
 			}
 		}		
 	}
-	console.log(element);
-	console.log("navigate to " + type);
+	consoleLog(element);
+	consoleLog("navigate to " + type);
 	dispatchMouseEvent(element, 'click', true, true);
 	if (type == 'albums') {
 		var albums = '{"albums": [';
 		if ($('#browse-view-albums > .album-container').length == 0) {
-			console.log('no albums available');
+			consoleLog('no albums available');
 			last_nav_request = request;
 			last_callback = callback;
 			setTimeout(function(request, callback) {
@@ -317,11 +322,11 @@ function nav_to(request, callback) {
 		callback(albums);
 	}
 	else if (type == 'albumSelected') {
-		console.log('you just clicked a specific album');
+		consoleLog('you just clicked a specific album');
 		var album = $('.albumViewAlbumTitle').text();
 		var artist = $('.albumViewArtistTitle').text();
 		var art = $('img.albumViewImage.albumImage').attr('src');
-		// console.log(art);
+		// consoleLog(art);
 		var album = '{"album": {' +
 						'"title" : "' + encodeURI(album) + '",' +
 						'"artist" : "' + encodeURI(artist) + '",' +
@@ -338,10 +343,10 @@ function nav_to(request, callback) {
 		callback(album);
 	}
 	else if (type == 'artists') {
-		console.log('artists selected');
+		consoleLog('artists selected');
 		var artists = '{"artists": [';
 		if ($('#browse-view-artists > .browseArtistContainer').length == 0) {
-			console.log('no artists available');
+			consoleLog('no artists available');
 			last_nav_request = request;
 			last_callback = callback;
 			setTimeout(function(request, callback) {
@@ -360,7 +365,7 @@ function nav_to(request, callback) {
 		callback(artists);
 	}
 	else if (type == "artistSelected") {
-		console.log('artist selected');
+		consoleLog('artist selected');
 		var albums = '{"albums": [';
 		$('.artistViewAlbumInfoContainer').each(function(index, element) {
 			var title = $(element).find('.albumViewAlbumTitle').text();
@@ -383,14 +388,14 @@ function nav_to(request, callback) {
 }
 
 // function select_and_play(request, callback) {
-// 	console.log(request.song_id);
-// 	console.log(request.script);
+// 	consoleLog(request.song_id);
+// 	consoleLog(request.script);
 // 	$('#' + request.song_id).addClass('selectedSong');
 // 	callback();
 // }
 
 function playback_action(type, callback) {
-	console.log(type);
+	consoleLog(type);
 	if (type == 'playPause') {
 		element = document.getElementById('playPause');
 	}
@@ -411,20 +416,20 @@ function playback_action(type, callback) {
 
 function onRequest(request, sender, callback) {
         if (request.action == 'set_popup') {
-			// console.log("set popup");
+			// consoleLog("set popup");
 			set_popup(request, callback)
 			
           // fetch_url(request.url, callback);
         }
 		else if (request.action == 'playback_action') {
-			console.log('playback action');
+			consoleLog('playback action');
 			playback_action(request.type, callback);
 		}
 		else if (request.action == 'nav_to') {
 			nav_to(request, callback);
 		}
 		else if (request.action == 'select_and_play') {
-			console.log('handle select and play request');
+			consoleLog('handle select and play request');
 			var element = document.getElementById(request.song_id);
 			dispatchMouseEvent(element, 'click', true, true);
 			dispatchMouseEvent(element, 'dblclick', true, true);
@@ -436,7 +441,7 @@ function onRequest(request, sender, callback) {
 			var offset_left = element.offsetLeft;
 		}
 		else if (request.action == 'restore_settings') {
-			console.log('changing settings');
+			consoleLog('changing settings');
 			restore_settings();
 			callback('calling back');
 		}
@@ -447,7 +452,7 @@ chrome.extension.onRequest.addListener(onRequest);
 
 // add amazon affiliate links to URLs
 function ama_links() {
-	console.log('ama links');
+	consoleLog('ama links');
 	var allLinks = document.getElementsByTagName("a");
 	var asin = '';
 	for (i = 0; i < allLinks.length; i++) {
@@ -505,12 +510,12 @@ var dispatchMouseEvent = function(target, var_args) {
 
 (function() {
 $("#playerSongInfo").contentChange(function() {
-	console.log('track changed');
+	consoleLog('track changed');
 	if (localStorage['notifications'] == 'true') {
-		console.log('show a notification');
+		consoleLog('show a notification');
 		chrome.extension.sendRequest({'action' : 'create_notification'}, function(response) {
-			console.log(response);
-			// console.log('tab id is set to: ' + localStorage["tabID"]);
+			consoleLog(response);
+			// consoleLog('tab id is set to: ' + localStorage["tabID"]);
 		});
 	}
 });
@@ -518,10 +523,10 @@ $("#playerSongInfo").contentChange(function() {
 
 function call_notification() {
 	if (localStorage['notifications'] == 'true') {
-		console.log('show a notification');
+		consoleLog('show a notification');
 		chrome.extension.sendRequest({'action' : 'create_notification'}, function(response) {
-			console.log(response);
-			// console.log('tab id is set to: ' + localStorage["tabID"]);
+			consoleLog(response);
+			// consoleLog('tab id is set to: ' + localStorage["tabID"]);
 		});
 	}
 }
