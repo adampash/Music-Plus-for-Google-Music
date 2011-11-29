@@ -469,7 +469,7 @@ function ama_links() {
 	}
 }
 
-var associateID = 'adapas-20';
+var associateID = 'adapas02-20';
 
 function getASIN(href) {
 	var asinMatch;

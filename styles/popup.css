@@ -21,6 +21,7 @@ body {
 	padding:0;
 	-webkit-border-radius: 20px;
 	font-family: 'Proxima Nova',arial,sans-serif;
+	overflow:hidden;
 }
 
 .big_art {
