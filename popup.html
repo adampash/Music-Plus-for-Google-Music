@@ -15,7 +15,7 @@
 		
 		function open_g_music() {
 			localStorage['notification_visible'] = false;
-			chrome.tabs.create({url: "http://music.google.com/"});
+			chrome.tabs.create({url: "http://play.google.com/music/"});
 			window.close();
 		}
 		
@@ -26,7 +26,7 @@
 			if (localStorage["tabID"] === undefined || localStorage["tabID"] == 'closed') {
 				console.log("Open a new tab: " + localStorage["tabID"]);
 				$('#artist').html('You need to <a href="#" onclick="open_g_music();">open a new Google Music tab</a>.');
-				// chrome.tabs.create({url: "http://music.google.com/"});
+				// chrome.tabs.create({url: "http://play.google.com/music/"});
 				// chrome.tabs.onRemoved.addListener(function(integer tabId, object removeInfo)
 				// window.close();
 			}
@@ -36,7 +36,7 @@
 					function(response) {
 						if (chrome.extension.lastError) {
 							$('#artist').html('You need to <a href="#" onclick="open_g_music();">open a new Google Music tab</a>.');
-							// chrome.tabs.create({url: "http://music.google.com/"});
+							// chrome.tabs.create({url: "http://play.google.com/music/"});
 							console.log('there was an error connecting to the tab');
 							// window.close();
 						}
@@ -46,7 +46,7 @@
 							$("#song_title").html(response.song_title);
 							$("#artist").html(response.artist);
 							if (response.album_art.split('default_album_med').length > 1 || response.album_art == 'http://undefined') {
-								response.album_art = 'http://music.google.com/music/default_album_med.png';
+								response.album_art = 'http://play.google.com/music/default_album_med.png';
 							}
 							// console.log('response.status: ' + response.status);
 							if (response.status == 'Play') {
@@ -144,7 +144,7 @@
 				function(response) {
 					$('#loadingOverlay').toggle();
 					if (chrome.extension.lastError) {
-						chrome.tabs.create({url: "http://music.google.com/"});
+						chrome.tabs.create({url: "http://play.google.com/music/"});
 						console.log('there was an error connecting to the tab');
 						window.close();
 					}
@@ -158,7 +158,7 @@
 						$('#navigate').scrollTop(0);
 						$.each(albums.albums, function(index, album) {
 							// console.log(album.album.title);
-							if (album.album.art.split('default_album_med').length > 1) album.album.art = 'music.google.com/music/default_album_med.png';
+							if (album.album.art.split('default_album_med').length > 1) album.album.art = 'play.google.com/music/default_album_med.png';
 							// console.log(album.album.id);
 							var row = '<div class="album_row" onclick="fetch_album(\'' + escape(album.album.id) + '\');"><img width="32" height="32" src="http://' + decodeURI(album.album.art) + '" /><b>' + decodeURIComponent(album.album.title) + '</b><br>' + decodeURI(album.album.artist) + '</div>';
 							$('#navigate').append(row);
@@ -175,7 +175,7 @@
 							if (artist.artist.title == '') {
 								return;
 							}
-							if (artist.artist.art.split('default_album_med').length > 1) artist.artist.art = 'music.google.com/music/default_album_med.png';
+							if (artist.artist.art.split('default_album_med').length > 1) artist.artist.art = 'play.google.com/music/default_album_med.png';
 							var row = '<div class="album_row" onclick="fetch_nav_item(\'artistSelected\', \'' + decodeURI(artist.artist.id) + '\', \'' + decodeURI(artist.artist.title) + '\', false);"><img width="32" height="32" src="http://' + decodeURI(artist.artist.art) + '" /><b>' + decodeURIComponent(artist.artist.title) + '</b><br></div>';
 							$('#navigate').append(row);
 						});
@@ -204,7 +204,7 @@
 				function(response) {
 					$('#loadingOverlay').toggle();
 					if (chrome.extension.lastError) {
-						chrome.tabs.create({url: "http://music.google.com/"});
+						chrome.tabs.create({url: "http://play.google.com/music/"});
 						console.log('there was an error connecting to the tab');
 						window.close();
 					}
@@ -573,7 +573,7 @@
 		
 		<div id="player">
 			<div id="album_art" class="big_art">
-				<img id="album_art_img" src="http://music.google.com/music/default_album_med.png" height="128" width="128" />
+				<img id="album_art_img" src="http://play.google.com/music/default_album_med.png" height="128" width="128" />
 			</div>
 			<div id="song_indicator" class="paused-indicator"></div>
 			<div id="song_info">
@@ -655,7 +655,7 @@
 		// 		function(response) {
 		// 			$('#loadingOverlay').toggle();
 		// 			if (chrome.extension.lastError) {
-		// 				chrome.tabs.create({url: "http://music.google.com/"});
+		// 				chrome.tabs.create({url: "http://play.google.com/music/"});
 		// 				console.log('there was an error connecting to the tab');
 		// 				window.close();
 		// 			}
