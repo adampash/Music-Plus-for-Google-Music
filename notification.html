@@ -36,7 +36,7 @@
 		chrome.tabs.sendRequest(parseInt(localStorage["tabID"]), {'action' : 'set_popup', 'url' : "none", 'data' : 'arbs'}, 
 			function(response) {
 				if (chrome.extension.lastError) {
-					chrome.tabs.create({url: "http://music.google.com/"});
+					chrome.tabs.create({url: "http://play.google.com/music/"});
 					console.log('there was an error connecting to the tab');
 					window.close();
 				}
@@ -44,7 +44,7 @@
 					$("#song_title").html(response.song_title);
 					$("#artist").html(response.artist);
 					if (response.album_art == 'http://default_album_med.png' || response.album_art == 'http://undefined') {
-						response.album_art = 'http://music.google.com/music/default_album_med.png';
+						response.album_art = 'http://play.google.com/music/default_album_med.png';
 					}
 					$("#album_art_img").attr('src', response.album_art);
 					if (response.status == 'Play') {
@@ -69,7 +69,7 @@
 	<div id="popup">
 		<div id="player">
 			<div id="album_art" class="big_art">
-				<img id="album_art_img" src="http://music.google.com/music/default_album_med.png" height="100" width="100" />
+				<img id="album_art_img" src="http://play.google.com/music/default_album_med.png" height="100" width="100" />
 			</div>
 			<div id="song_indicator" class="paused-indicator"></div>
 			<div id="song_info">

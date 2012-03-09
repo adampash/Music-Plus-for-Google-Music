@@ -3,9 +3,9 @@
 // @version			0.9.3
 // @namespace		        http://www.radicalpi.net/
 // @author			Chris Hendry
-// @include			http*://music.google.com/music/listen*
-// @match			http://music.google.com/music/listen*
-// @match			https://music.google.com/music/listen*
+// @include			http*://play.google.com/music/listen*
+// @match			http://play.google.com/music/listen*
+// @match			https://play.google.com/music/listen*
 // @icon			http://radicalpi.net/upload/gMusic/gMusic.png
 // @description		        Adds a lyrics panel that automatically fetches lyrics in                              Google Music.
 // ==/UserScript==
@@ -64,7 +64,7 @@ function fetchNowPlaying() {
 	
 		if(localLyrics == null || localLyrics.length < 1 || reload) {
 			reload = false;
-			document.getElementById('lyrics').innerHTML = "<div id='lyricsLoader' style='text-align:center;'><img src='http://music.google.com/music/Spinner_48.gif' style='vertical-align:middle;'></div>";
+			document.getElementById('lyrics').innerHTML = "<div id='lyricsLoader' style='text-align:center;'><img src='http://play.google.com/music/Spinner_48.gif' style='vertical-align:middle;'></div>";
 			document.getElementById('lyricsLoader').style.height = (window.innerHeight-237)+'px';
 			document.getElementById('lyricsLoader').style.lineHeight = (window.innerHeight-237)+'px';
 	
@@ -197,11 +197,11 @@ document.getElementById('modalBG').style.visibility = "hidden";
 }
 
 
-if (localStorage['lyrics'] == 'true' && window.location.host == 'music.google.com') {
+if (localStorage['lyrics'] == 'true' && window.location.host == 'play.google.com') {
 	console.log('fetch new lyrics');
 	$(document).ready(function(e) {
 		$('#coloredBar').after('<div id="coloredBar222"></div>');
-		document.getElementById('coloredBar222').innerHTML += "<div id='lyricsToolbar' style=\"z-index:2; position:absolute; top:169px; right:17px; width:278px; height:22px; padding:0px; background-image:url('http://music.google.com/music/bg_header.gif');\"></div>";
+		document.getElementById('coloredBar222').innerHTML += "<div id='lyricsToolbar' style=\"z-index:2; position:absolute; top:169px; right:17px; width:278px; height:22px; padding:0px; background-image:url('http://play.google.com/music/bg_header.gif');\"></div>";
 		document.getElementById('lyricsToolbar').innerHTML += "<img id='reloadLyrics' style='position:relative; top:2px; left:2px; width:18px; height:18px; visibility:hidden;' src='http://radicalpi.net/upload/gMusic/refresh.png'>";
 		document.getElementById('lyricsToolbar').innerHTML += "<img id='editLyrics' style='position:relative; top:2px; left:8px; width:18px; height:18px; visibility:hidden;' src='http://radicalpi.net/upload/gMusic/edit.png'>";
 		document.getElementById('lyricsToolbar').innerHTML += "<img id='editSettings' style='position:relative; top:2px; left:220px; width:18px; height:18px;' src='http://radicalpi.net/upload/gMusic/gear.png'>";

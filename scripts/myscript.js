@@ -7,7 +7,7 @@ var consoleLog = function(msg){
 	//console.log(msg);
 };
 
-if (localStorage['download'] == 'true' && window.location.host == 'music.google.com') {
+if (localStorage['download'] == 'true' && window.location.host == 'play.google.com') {
 	consoleLog('insert download button');
 	insert_download_button();
 }
@@ -25,7 +25,7 @@ function restore_settings() {
 function check_url() {
 	consoleLog('check url');
 	restore_settings();
-	if (window.location.host == 'music.google.com') {
+	if (window.location.host == 'play.google.com') {
 		consoleLog('setting tab id');
 		chrome.extension.sendRequest({'action' : 'set_tab_id'}, function(response) {
 			localStorage["tabID"] = response;
@@ -553,7 +553,7 @@ function download() {
 	var id = document.getElementById('song_indicator').parentNode.parentNode.parentNode.id;
 	if(id == "") id = document.getElementById('song_indicator').parentNode.parentNode.id;
 	id = id.split("_")[1];
-	var url = 'http://music.google.com/music/play?u=0&songid='+id+'&pt=e';
+	var url = 'http://play.google.com/music/play?u=0&songid='+id+'&pt=e';
 	var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function(data) {
       if (xhr.readyState == 4) {
