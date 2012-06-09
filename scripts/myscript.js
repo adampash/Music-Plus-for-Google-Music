@@ -7,7 +7,7 @@ var consoleLog = function(msg){
 	//console.log(msg);
 };
 
-if (localStorage['download'] == 'true' && window.location.host == 'music.google.com') {
+if (localStorage['download'] == 'true' && window.location.host == 'play.google.com') {
 	consoleLog('insert download button');
 	insert_download_button();
 }
@@ -25,7 +25,7 @@ function restore_settings() {
 function check_url() {
 	consoleLog('check url');
 	restore_settings();
-	if (window.location.host == 'music.google.com') {
+	if (window.location.host == 'play.google.com') {
 		consoleLog('setting tab id');
 		chrome.extension.sendRequest({'action' : 'set_tab_id'}, function(response) {
 			localStorage["tabID"] = response;
@@ -158,7 +158,7 @@ function on_amazon(data) {
 		var img = $(this).find('MediumImage > URL').text();
 		var type = $(this).find('ItemAttributes > ProductTypeName').text();
 		type = type.split('_')[2];
-		amazon_links = amazon_links + '<div class="amazon_alb album-container"><a href="' + url + '?tag=adapas-20" target="_blank" class="fade-out-parent"><img src="' + img + '" height="124" width="124" class="albumImage" style="margin-bottom:-14px;" onmouseover="SJBpost(\'albumArtEnter\', this); onmouseout="SJBpost(\'albumArtLeave\', this);"" /><br /><span class="amazon_text browseAlbumTitle fade-out-content">' + title + '<br /></span><div class="fade-out-effect"></div><span class="browseSubtext" style="float:left;">[' + type + ']</span></div>';
+		amazon_links = amazon_links + '<div class="amazon_alb album-container"><a href="' + url + '?tag=adapas02-20" target="_blank" class="fade-out-parent"><img src="' + img + '" height="124" width="124" class="albumImage" style="margin-bottom:-14px;" onmouseover="SJBpost(\'albumArtEnter\', this); onmouseout="SJBpost(\'albumArtLeave\', this);"" /><br /><span class="amazon_text browseAlbumTitle fade-out-content">' + title + '<br /></span><div class="fade-out-effect"></div><span class="browseSubtext" style="float:left;">[' + type + ']</span></div>';
 		// consoleLog(id);
 		// var title = $(this).find('title').text();
 		// var url = $(this).find('url').text();
@@ -457,7 +457,7 @@ function ama_links() {
 	var asin = '';
 	for (i = 0; i < allLinks.length; i++) {
 		var href = allLinks[i].href;
-		if (href.match(/amazon\./i) && !href.match(/tag/i) && !href.match(/nosim/i) && !href.match(/betteraddons/i) && !href.match(/palitoy/i)) {
+		if (href.match(/amazon\./i) && !href.match(/tag/i) && !href.match(/nosim/i)) {
 			asin = getASIN(href);
 			if (asin != null) {
 				domain = getDomain(href);
@@ -553,7 +553,7 @@ function download() {
 	var id = document.getElementById('song_indicator').parentNode.parentNode.parentNode.id;
 	if(id == "") id = document.getElementById('song_indicator').parentNode.parentNode.id;
 	id = id.split("_")[1];
-	var url = 'http://music.google.com/music/play?u=0&songid='+id+'&pt=e';
+	var url = 'http://play.google.com/music/play?u=0&songid='+id+'&pt=e';
 	var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function(data) {
       if (xhr.readyState == 4) {

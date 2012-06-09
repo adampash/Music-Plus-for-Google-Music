@@ -2,17 +2,17 @@
 // @name           Google Music Player Enhancements
 // @namespace      http://www.danielslaughter.com/
 // @author         Daniel Slaughter
-// @include        http*://music.google.com/music/listen*
-// @match          http://music.google.com/music/listen*
-// @match          https://music.google.com/music/listen*
+// @include        http*://play.google.com/music/listen*
+// @match          http://play.google.com/music/listen*
+// @match          https://play.google.com/music/listen*
 // @icon           http://www.danielslaughter.com/projects/googlecloudplayer/icon_32x32.png
 // @description    Adds Last.fm scrobbling support as well as other optional features.
 
-if (localStorage['scrobble'] == 'true' && window.location.host == 'music.google.com') {
+if (localStorage['scrobble'] == 'true' && window.location.host == 'play.google.com') {
 	var o = {
 		interval: 250, // How often to check for page load. Default: 250 (1/4 second)
 		max: 15000, // How long to check for page load. Default: 15000 (15 seconds)
-		domain: location.protocol + '//' + location.hostname, // ie.: https://music.google.com
+		domain: location.protocol + '//' + location.hostname, // ie.: https://play.google.com
 		protocol: location.protocol + '//', // Used for secure connections. ie.: https://
 		version: '5/26/2011', // Script version number used to check for updates
 		path: location.pathname, // leave this alone; it's used to determine if you're on a valid player page or not
