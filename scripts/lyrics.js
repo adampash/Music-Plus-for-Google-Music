@@ -226,7 +226,7 @@ if (localStorage['lyrics'] == 'true' && window.location.host == 'play.google.com
 				<span class='modal-dialog-title-text'>Lyrics Settings</span>\
 			</div>\
 			<div class='modal-dialog-content'>\
-				Google Music Lyrics v"+version+"\
+				Google Play Music Lyrics v"+version+"\
 				<br><a href='"+download+"'></a>\
 				</div>\
 			<div class='modal-dialog-buttons'>\

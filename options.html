@@ -1,5 +1,5 @@
 <html>
-<head><title>Music Plus for Google Music Options</title></head>
+<head><title>Music Plus for Google Play Music Options</title></head>
 	<script src='scripts/jquery-1.6.1.min.js'></script>
 	<script type="text/javascript">
 
@@ -25,7 +25,7 @@
 					console.log(response);
 					// console.log('tab id is set to: ' + localStorage["tabID"]);
 				});
-				$("#notification").text("Option saved. You may have to refresh your Google Music tab before the change takes effect.").show();
+				$("#notification").text("Option saved. You may have to refresh your Google Play Music tab before the change takes effect.").show();
 			});	
 			$('input:checkbox').each(function(index) {
 				if (localStorage[this.id] === undefined && this.id != 'support') {
@@ -80,7 +80,7 @@
 	</style>
 
 <body onload="restore_options()">
-	<h1>Music Plus for Google Music Settings</h1>
+	<h1>Music Plus for Google Play Music Settings</h1>
 	<div id="container">
 		<div class="item"><input type="checkbox" name="bios" value="Bios" id="bios"> <label for="bios">Include artist and album bios via Last.fm</label><br /></div>
 		<div class="item"><input type="checkbox" name="scrobble" value="Scrobble" id="scrobble"> <label for="scrobble">Scrobble tracks to Last.fm</label> by <a href="http://www.danielslaughter.com/projects/google-music-with-lastfm/">Daniel Slaughter</a><br /></div>

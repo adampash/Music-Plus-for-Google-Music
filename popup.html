@@ -25,7 +25,7 @@
 			console.log(localStorage["tabID"]);
 			if (localStorage["tabID"] === undefined || localStorage["tabID"] == 'closed') {
 				console.log("Open a new tab: " + localStorage["tabID"]);
-				$('#artist').html('You need to <a href="#" onclick="open_g_music();">open a new Google Music tab</a>.');
+				$('#artist').html('You need to <a href="#" onclick="open_g_music();">open a new Google Play Music tab</a>.');
 				// chrome.tabs.create({url: "http://play.google.com/"});
 				// chrome.tabs.onRemoved.addListener(function(integer tabId, object removeInfo)
 				// window.close();
@@ -35,7 +35,7 @@
 				chrome.tabs.sendRequest(parseInt(localStorage["tabID"]), {'action' : 'set_popup', 'url' : "none", 'data' : 'arbs'}, 
 					function(response) {
 						if (chrome.extension.lastError) {
-							$('#artist').html('You need to <a href="#" onclick="open_g_music();">open a new Google Music tab</a>.');
+							$('#artist').html('You need to <a href="#" onclick="open_g_music();">open a new Google Play Music tab</a>.');
 							// chrome.tabs.create({url: "http://play.google.com/"});
 							console.log('there was an error connecting to the tab');
 							// window.close();
