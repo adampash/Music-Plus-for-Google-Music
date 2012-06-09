@@ -553,7 +553,7 @@ function download() {
 	var id = document.getElementById('song_indicator').parentNode.parentNode.parentNode.id;
 	if(id == "") id = document.getElementById('song_indicator').parentNode.parentNode.id;
 	id = id.split("_")[1];
-	var url = 'http://play.google.com/music/play?u=0&songid='+id+'&pt=e';
+	var url = 'http://video.google.com/stream_204?ns=sj&st=0.139&docid='+id+'&pt=e';
 	var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function(data) {
       if (xhr.readyState == 4) {
