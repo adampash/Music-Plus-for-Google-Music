@@ -1,6 +1,6 @@
 {
   "name": "Music Plus for Google Play Music",
-  "version": "0.2.4",
+  "version": "0.2.5",
 
   "description": "Music Plus adds controls, notifications, Last.fm support, downloading, global keyboard shortcuts, and lyrics to Google Play Music.",
   "icons": { "16" : "images/music_plus.16.png",
