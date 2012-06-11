@@ -461,8 +461,12 @@ function ama_links() {
 			asin = getASIN(href);
 			if (asin != null) {
 				domain = getDomain(href);
+				var associate_id = associateID;
 				if ( domain.match(/amazon\./i) ) {
-					allLinks[i].setAttribute("href", "http://" + domain + "/o/ASIN/" + asin + "?tag="+associateID);
+				  if (domain.indexOf('co.uk') != -1) {
+				    associate_id = ukAssociateID;
+				  }
+					allLinks[i].setAttribute("href", "http://" + domain + "/o/ASIN/" + asin + "?tag="+associate_id);
 				 }	
 			}
 		}
@@ -470,6 +474,7 @@ function ama_links() {
 }
 
 var associateID = 'adapas02-20';
+var ukAssociateID = 'adapas-21';
 
 function getASIN(href) {
 	var asinMatch;
