@@ -1,6 +1,6 @@
 function player_action(type) {
 	console.log('play/pause called');
-	chrome.tabs.sendRequest(parseInt(localStorage["tabID"]), {'action' : 'playback_action', 'type' : type}, 
+	chrome.tabs.sendRequest(parseInt(localStorage["tabID"]), {'action' : 'playback_action', 'type' : type},
 		function(response) {
 			console.log('play/pause response');
 			popup_prep();
@@ -29,5 +29,5 @@ function toggle_play(status) {
 		$('#song_indicator').removeClass('playing-indicator');
 		$("#playPause").attr('title', 'Play');
 	}
-	
+
 }

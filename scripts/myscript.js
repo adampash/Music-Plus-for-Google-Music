@@ -4,7 +4,7 @@ var notificaiton_html = 'popup.html';
 
 var consoleLog = function(msg){
 	// uncomment for "dev mode"
-	//console.log(msg);
+	console.log(msg);
 };
 
 // if (localStorage['download'] == 'true' && window.location.host == 'play.google.com') {
@@ -120,7 +120,7 @@ function on_artist_text(data) {
 		list.push('<a class="songListLink" href="#' + encodeURI(element.textContent) + '_ar" onclick="SJBpost(\'artistSelected\', this, \'' + element.textContent + '\');">' + element.textContent + '</a>');
 	}));
 	// alert(list.join(', '));
-	
+
 	img = '<div class="artistViewAlbumInfoContainer" style="float:left;"><img src="' + img + '" width="128" class="albumImage" style="margin-right: 4px; margin-bottom: 5px; float:left;"/>' + artist_name + '</div>';
 	$('#last_fm_info').html(img + '<div class="bio_text">' + nl2br(artist_bio) + '<br /><br />' +
 		'<div id="similar_last_fm_artists"><b>Similar artists:</b> ' + list.join(', ') + '<div class="ext_src">Artist bio from<br /> <a href="http://last.fm" target="_blank"><img src="' + last_fm_logo + '" /></a></div></div>' +
@@ -171,7 +171,7 @@ function on_amazon(data) {
 		// });
 	});
 	$('#amazon_links').html(amazon_links);
-				
+
 	// var xml_doc = $.parseXML(data);
 	// var $xml = $( xml_doc );
 	// var item = $xml.find('item:first').text();
@@ -197,11 +197,11 @@ function on_album_text(data) {
 	if (album_info.length != 0) {
 		album_info = strip_links(album_info, '#hidden_last_fm_album_info');
 		$('#last_fm_album_info').html('<b style="float:left;">About this album:<br /></b><div style="margin-left:185px;">' + nl2br(truncate_bio(album_info, 80)) + '<br /><div class="ext_src">Album info from<br /> <a href="http://last.fm" target="_blank"><img src="' + last_fm_logo + '" /></a></div>');
-		
+
 		$("#last_fm_album_info > div > span.more_bio").click(function() {
 			show_all_bio('album');
 		});
-	}	
+	}
 }
 
 function strip_links(text, div) {
@@ -239,8 +239,8 @@ function parse_hash() {
 	return window.location.hash.split('_')[window.location.hash.split('_').length - 1];
 }
 
-function nl2br (str, is_xhtml) {   
-	var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';    
+function nl2br (str, is_xhtml) {
+	var breakTag = (is_xhtml || typeof is_xhtml === 'undefined') ? '<br />' : '<br>';
 	return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ breakTag +'$2');
 }
 
@@ -280,6 +280,9 @@ function nav_to(request, callback) {
 			consoleLog('get element by id');
 			element = document.getElementById(id);
 		}
+		else if (type == 'artists' || type == 'albums') {
+			element = $('#nav_collections li[data-type="' + type + '"]')[0];
+		}
 		else {
 			consoleLog('get element by type');
 			element = document.getElementById(type);
@@ -291,7 +294,7 @@ function nav_to(request, callback) {
 			else {
 				element = element.childNodes[1];
 			}
-		}		
+		}
 	}
 	consoleLog(element);
 	consoleLog("navigate to " + type);
@@ -345,6 +348,7 @@ function nav_to(request, callback) {
 	else if (type == 'artists') {
 		consoleLog('artists selected');
 		var artists = '{"artists": [';
+		console.log('what is this?', $('#browse-view-artists > .browseArtistContainer'));
 		if ($('#browse-view-artists > .browseArtistContainer').length == 0) {
 			consoleLog('no artists available');
 			last_nav_request = request;
@@ -381,7 +385,7 @@ function nav_to(request, callback) {
 		albums = albums.slice(0, albums.length - 1);
 		albums += ']}';
 		callback(albums);
-		
+
 	}
 	last_nav_request = request;
 	last_callback = callback;
@@ -395,7 +399,6 @@ function nav_to(request, callback) {
 // }
 
 function playback_action(type, callback) {
-	consoleLog(type);
 	if (type == 'playPause') {
 		element = document.getElementById('playPause');
 	}
@@ -408,9 +411,15 @@ function playback_action(type, callback) {
 	else if (type == 'currently_playing') {
 		element = document.getElementById('playerSongInfo').childNodes[0];
 	}
-	dispatchMouseEvent(element, 'mouseover', true, true);
-	dispatchMouseEvent(element, 'mousedown', true, true);
-	dispatchMouseEvent(element, 'mouseup', true, true);
+	if ($(element).hasClass('goog-flat-button-disabled')) {
+		element = document.getElementById('start_shuffle_all');
+		dispatchMouseEvent(element, 'click', true, true);
+	}
+	else {
+		dispatchMouseEvent(element, 'mouseover', true, true);
+		dispatchMouseEvent(element, 'mousedown', true, true);
+		dispatchMouseEvent(element, 'mouseup', true, true);
+	}
 	callback();
 }
 
@@ -418,7 +427,7 @@ function onRequest(request, sender, callback) {
         if (request.action == 'set_popup') {
 			// consoleLog("set popup");
 			set_popup(request, callback)
-			
+
           // fetch_url(request.url, callback);
         }
 		else if (request.action == 'playback_action') {
@@ -467,7 +476,7 @@ function ama_links() {
 				    associate_id = ukAssociateID;
 				  }
 					allLinks[i].setAttribute("href", "http://" + domain + "/o/ASIN/" + asin + "?tag="+associate_id);
-				 }	
+				 }
 			}
 		}
 	}
@@ -545,12 +554,12 @@ function call_notification() {
 // @namespace      http://www.radicalpi.net/
 // @author		   Chris Hendry
 // @description    Allows you to download your music from Google Music Beta
-	
+
 function insert_download_button() {
 	document.getElementById('coloredBar').innerHTML += "<div id='downloadSongHolder' style='position:fixed; bottom:12px; right:254px; display:none; cursor:pointer;'>	<img id='downloadSong' src='http://radicalpi.net/upload/gMusic/download.png'>	</div>";
 	document.getElementById('downloadSong').addEventListener("click", download, false);
-	setTimeout(toggleDisplay,1000);	
-	
+	setTimeout(toggleDisplay,1000);
+
 }
 
 function download() {
