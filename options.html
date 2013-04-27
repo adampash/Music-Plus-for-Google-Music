@@ -1,48 +1,7 @@
 <html>
 <head><title>Music Plus for Google Play Music Options</title></head>
 	<script src='scripts/jquery-1.6.1.min.js'></script>
-	<script type="text/javascript">
-
-// Saves options to localStorage.
-		function save_options() {
-		  var select = document.getElementById("color");
-		  var color = select.children[select.selectedIndex].value;
-		  localStorage["favorite_color"] = color;
-		
-		  // Update status to let user know options were saved.
-		  
-		  setTimeout(function() {
-		    status.innerHTML = "";
-		  }, 750);
-		}
-
-		// Restores select box state to saved value from localStorage.
-		function restore_options() {
-			$('input:checkbox').click(function() {
-				localStorage[this.id] = this.checked;
-				console.log('call restore settings');
-				chrome.tabs.sendRequest(parseInt(localStorage["tabID"]), {'action' : 'restore_settings'}, function(response) {
-					console.log(response);
-					// console.log('tab id is set to: ' + localStorage["tabID"]);
-				});
-				$("#notification").text("Option saved. You may have to refresh your Google Play Music tab before the change takes effect.").show();
-			});	
-			$('input:checkbox').each(function(index) {
-				if (localStorage[this.id] === undefined && this.id != 'support') {
-					// console.log('first run, setting to true');
-					localStorage[this.id] = 'true';
-				}
-				if (localStorage[this.id] == 'true') {
-					this.checked = true;
-				}
-				else {
-					this.checked = false;
-				}
-			});
-			
-		}
-
-	</script>
+	<script src="scripts/options.js"></script>
 	<style>
 		body {
 			font-family: 'Proxima Nova',arial,sans-serif;
@@ -50,11 +9,11 @@
 			margin:0;
 			padding:0;
 		}
-		
+
 		#container {
 			margin:25px;
 		}
-		
+
 		h1 {
 			background:#666;
 			color:white;
@@ -63,29 +22,36 @@
 			padding:10px;
 		}
 		.item {
-			height:28px;
+			margin:10px;
 		}
-		
+
 		#notification {
 			position:absolute;
-			top:70px;
+			top:112px;
 			left:430px;
-			height:25px;
-			padding:25px;
+			padding:12px;
 			width:300px;
 			background:#FFFEA8;
 			-webkit-border-radius: 10px;
 			font-size:13px;
 		}
+
+		.disabled {
+			opacity: .5;
+		}
 	</style>
 
-<body onload="restore_options()">
+<body>
 	<h1>Music Plus for Google Play Music Settings</h1>
 	<div id="container">
+		<h3>Enable the features you'd like to use (or just <a href="#" class="enable_all">enable everything</a>)</h3>
 		<div class="item"><input type="checkbox" name="bios" value="Bios" id="bios"> <label for="bios">Include artist and album bios via Last.fm</label><br /></div>
 		<div class="item"><input type="checkbox" name="scrobble" value="Scrobble" id="scrobble"> <label for="scrobble">Scrobble tracks to Last.fm</label> by <a href="http://www.danielslaughter.com/projects/google-music-with-lastfm/">Daniel Slaughter</a><br /></div>
-		<div class="item"><input type="checkbox" name="notifications" value="notifications" id="notifications"> <label for="notifications">Show notifications when tracks change</label><br /></div>
-		<div class="item"><input type="checkbox" name="shortcuts" value="shortcuts" id="shortcuts"> <label for="shortcuts">Enable global keyboard shortcuts</label> (Ctrl+Shift+P to play/pause, Ctrl+Shift+Left/Right for next/previous track)<br /></div>
+		<div class="item">
+			<input type="checkbox" name="notifications" value="notifications" id="notifications"> <label for="notifications">Show notifications when tracks change</label><br />
+			<blockquote><input disabled type="checkbox" name="mini_player" value="mini_player" id="mini_player"> <label for="notifications">Use notification window as mini-player</label><br /></blockquote>
+		</div>
+		<!-- <div class="item"><input type="checkbox" name="shortcuts" value="shortcuts" id="shortcuts"> <label for="shortcuts">Enable global keyboard shortcuts</label> (Ctrl+Shift+P to play/pause, Ctrl+Shift+Left/Right for next/previous track)<br /></div> -->
 		<!--
 		<div class="item"><input type="checkbox" name="download" id="download" value="Download"> <label for="download">Insert a download button for currently playing track</label> by <a href="http://userscripts.org/scripts/show/105972">Chris Hendry</a><br /></div>
 		-->
@@ -98,7 +64,7 @@
 		<input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
 		<img alt="" border="0" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" width="1" height="1">
 		</form>
-		
+
 	</div>
 	<div id="notification" style="display:none;">This is a notification</div>
 </body>

@@ -101,7 +101,9 @@
 
     var breadcrumb = [];
     function toggle_navigation() {
+      console.log(breadcrumb);
       breadcrumb.pop();
+      console.log(breadcrumb);
       if (breadcrumb.length < 1) {
         if ($("#navigate").is(':visible') && $('.tab-text').text() == "My Library") {
           close_nav();
@@ -110,8 +112,6 @@
           $('.tab-text').text("My Library");
           $('#navigate').html('<div class="album_row bold artists" title="artists">Artists</div>' +
           '<div class="album_row bold albums" title="albums">Albums</div>');
-          // '<div class="album_row bold" onclick="fetch_nav_item(\'all\', \'\', \'All Songs\', false);" title="all">Songs</div>'
-          // '<div class="album_row bold" onclick="fetch_nav_item(\'genres\', \'\', \'Genres\', false);" title="genres">Genres</div>');
           $("#navigate").slideDown();
           $('#close_nav').show();
           prep_nav();
@@ -165,7 +165,7 @@
               // console.log(album.album.title);
               if (album.album.art.split('default_album_med').length > 1) album.album.art = 'play.google.com/music/default_album_med.png';
               // console.log(album.album.id);
-              var row = '<div class="album_row" onclick="fetch_album(\'' + escape(album.album.id) + '\');"><img width="32" height="32" src="http://' + decodeURI(album.album.art) + '" /><b>' + decodeURIComponent(album.album.title) + '</b><br>' + decodeURI(album.album.artist) + '</div>';
+              var row = '<div class="album_row album" data-id="' + escape(album.album.id) + '"><img width="32" height="32" src="http://' + decodeURI(album.album.art) + '" /><b>' + decodeURIComponent(album.album.title) + '</b><br>' + decodeURI(album.album.artist) + '</div>';
               $('#navigate').append(row);
             });
           }
@@ -181,13 +181,14 @@
                 return;
               }
               if (artist.artist.art.split('default_album_med').length > 1) artist.artist.art = 'play.google.com/music/default_album_med.png';
-              var row = '<div class="album_row" onclick="fetch_nav_item(\'artistSelected\', \'' + decodeURI(artist.artist.id) + '\', \'' + decodeURI(artist.artist.title) + '\', false);"><img width="32" height="32" src="http://' + decodeURI(artist.artist.art) + '" /><b>' + decodeURIComponent(artist.artist.title) + '</b><br></div>';
+              var row = '<div class="album_row artist" data-id="' + decodeURI(artist.artist.id) + '" data-title="' + decodeURI(artist.artist.title) + '"><img width="32" height="32" src="http://' + decodeURI(artist.artist.art) + '" /><b>' + decodeURIComponent(artist.artist.title) + '</b><br></div>';
               $('#navigate').append(row);
             });
           }
           else {
             console.log('no matches');
           }
+          prep_nav();
         }
       );
       console.log('request made');
@@ -224,11 +225,11 @@
                     '</div>' +
                     '<div class="track_list">';
             $.each(album.album.tracks, function(index, track) {
-              // console.log(track);
-              album_page += '<div class="album_row ind_track" id="' + track.track.song_id + '" ondblclick="play_selected_track(this)">' + decodeURI(track.track.title) + '</div>';
+              album_page += '<div class="album_row ind_track" id="' + track.track.song_id + '">' + decodeURI(track.track.title) + '</div>';
             });
             album_page += '</div>';
             $('#navigate').append(album_page);
+            prep_nav();
             $('.tab-text').text(decodeURI(album.album.title));
           }
         }
@@ -257,6 +258,22 @@ function prep_nav() {
     .on('click', function() {
       fetch_nav_item('albums', '', 'Albums', false);
     });
+
+  $('.album_row.album')
+    .on('click', function() {
+      fetch_album($(this).attr('data-id'));
+    });
+
+  $('.album_row.artist')
+    .on('click', function() {
+      fetch_nav_item('artistSelected', $(this).attr('data-id'), $(this).attr('data-title'), false);
+    });
+
+  $('.album_row.ind_track')
+    .on('click', function() {
+      play_selected_track(this);
+    });
+
 }
 
 $(function() {

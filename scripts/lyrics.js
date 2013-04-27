@@ -32,68 +32,67 @@ while(i<0) {
 download = "data:x-application/external;charset=utf-8,"+data;
 
 function fetchNowPlaying() {
-	
+
 	playerDiv = document.getElementById('playerSongInfo').innerHTML;
-	
+
 	var newSongTitle = "";
 	var newSongArtist = "";
-	
+
 	if(playerDiv != null && playerDiv.length > 0)
 	{
-	
+
 	if(document.getElementById('lyrics').style.visibility == "visible") {
 		document.getElementById('editLyrics').style.visibility = "visible";
 		document.getElementById('reloadLyrics').style.visibility = "visible";
 	}
-	
-	
-	newSongTitle = playerDiv.split('<div class="fade-out-content" title="')[1].split('">')[0];
-	newSongArtist = playerDiv.split('<div class="fade-out-content" title="')[2].split('">')[0];
+
+
+	newSongTitle = $("#playerSongTitle").text();
+	newSongArtist = $("#player-artist").text();
 	var artists = newSongArtist.split("/");
 	if(artists[0].indexOf("Various Artists") != -1) {artists[0] = artists[1];}
 		newSongArtist = artists[0];
-	
+
 	}
-	
+
 	if((songTitle != newSongTitle || songArtist != newSongArtist) || reload) {
 		songTitle = newSongTitle;
 		songArtist = newSongArtist;
-	
+
 		localLyrics = localStorage.getItem(escape(songArtist+'|'+songTitle));
-	
-	
-		if(localLyrics == null || localLyrics.length < 1 || reload) {
+
+
+		if(localLyrics === null || localLyrics.length < 1 || reload) {
 			reload = false;
 			document.getElementById('lyrics').innerHTML = "<div id='lyricsLoader' style='text-align:center;'><img src='http://play.google.com/music/Spinner_48.gif' style='vertical-align:middle;'></div>";
 			document.getElementById('lyricsLoader').style.height = (window.innerHeight-237)+'px';
 			document.getElementById('lyricsLoader').style.lineHeight = (window.innerHeight-237)+'px';
-	
+
 			var url1 = 'http://www.google.com/search?q='+escape(songTitle+' '+songArtist+' site:songlyrics.com');
 			chrome.extension.sendRequest({'action' : 'lyric_search', 'url1': url1}, function(response) {
 				try {
 					var lyrics = response.split('<p id="songLyricsDiv"')[1].split('">')[1].split("</p>")[0];
-					if(lyrics == '' || lyrics == null) { lyrics = "<p>Sorry, we cannot find the lyrics for this song.</p>"; }
+					if(lyrics === '' || lyrics === null) { lyrics = "<p>Sorry, we cannot find the lyrics for this song.</p>"; }
 					document.getElementById('lyrics').innerHTML = lyrics;
 					localStorage.setItem(escape(songArtist+'|'+songTitle),lyrics);
-				} 
+				}
 				catch(Exception) {
 					document.getElementById('lyrics').innerHTML = "";
-				}	
+				}
 				window.setTimeout(fetchNowPlaying,500);
 			});
-			
-		}	 
-		else { 
-			document.getElementById('lyrics').innerHTML = localLyrics; window.setTimeout(fetchNowPlaying,500); 
+
+		}
+		else {
+			document.getElementById('lyrics').innerHTML = localLyrics; window.setTimeout(fetchNowPlaying,500);
 		}
 	}
 	else { window.setTimeout(fetchNowPlaying,500); }
 }
 
 function resizeWindow() {
-	console.log('resize window');
 	winWidth = window.innerWidth;
-	winHeight = window.innerHeight; 
+	winHeight = window.innerHeight;
 
 less = 523;
 if(document.getElementById('lyrics').style.visibility == "hidden") less -= 299;
@@ -145,6 +144,7 @@ function toggleLyrics() {
 		document.getElementById('breadcrumbs').style.width = (window.innerWidth-523)+'px';
 		localStorage['display_music_plus_lyrics'] = "true";
 	}
+	$(window).resize();
 }
 
 function reloadLyrics() {
@@ -199,9 +199,8 @@ document.getElementById('modalBG').style.visibility = "hidden";
 
 
 if (localStorage['lyrics'] == 'true' && window.location.host == 'play.google.com') {
-  // console.log('fetch new lyrics');
 	$(document).ready(function(e) {
-	  $('.menu-bar').append('<li><a><span class="nav-option" id="lyrics_toggle_button">Lyrics</span></a></li>')
+		$('.menu-bar').append('<li><a><span class="nav-option" id="lyrics_toggle_button">Lyrics</span></a></li>');
 		$('#coloredBar').after('<div id="coloredBar222"></div>');
 		document.getElementById('coloredBar222').innerHTML += "<div id='lyricsToolbar' style=\"z-index:2; position:absolute; top:176px; right:17px; width:278px; height:22px; padding:0px; \"></div>";
 		document.getElementById('lyricsToolbar').innerHTML += "<img id='reloadLyrics' style='position:relative; top:2px; left:2px; width:18px; height:18px; visibility:hidden;' src='http://radicalpi.net/upload/gMusic/refresh.png'>";
@@ -241,7 +240,7 @@ if (localStorage['lyrics'] == 'true' && window.location.host == 'play.google.com
 				//<div class='settings-dialog-subtext'><input type='checkbox'>Cache Lyrics</div>\
 				//<br>Lyric Sources:\
 				//<div class='settings-dialog-subtext'><input type='checkbox'>Lyrics.com <input type='checkbox'>Other</div>\
-	
+
 
 
     // document.getElementById('coloredBar222').innerHTML += "<div id='lyricsTab' class='nav-tab' style='z-index:10; position:absolute; top:175px; right:0px; width:295px;'><span id='lyricsTabText' class='tab-text'>LYRICS</span></div>";
@@ -265,7 +264,7 @@ if (localStorage['lyrics'] == 'true' && window.location.host == 'play.google.com
 		$(window).resize(resizeWindow);
 		$(window).ready(function() {
 			winWidth = $(document).width();
-			winHeight = $(document).height(); 
+			winHeight = $(document).height();
 		})
 
 	});

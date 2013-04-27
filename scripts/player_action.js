@@ -1,9 +1,7 @@
 function player_action(type) {
-	console.log('play/pause called');
 	chrome.tabs.sendRequest(parseInt(localStorage["tabID"]), {'action' : 'playback_action', 'type' : type},
 		function(response) {
-			console.log('play/pause response');
-			popup_prep();
+			// popup_prep();
 		}
 	);
 	if (type == 'playPause' && $("#playPause").attr('title') == "Play") {
@@ -15,7 +13,6 @@ function player_action(type) {
 }
 
 function toggle_play(status) {
-	// console.log('toggling play ' + status);
 	if (status == 'playing') {
 		$('#playPause').addClass('goog-flat-button-checked');
 		$('#song_indicator').addClass('playing-indicator');

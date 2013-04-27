@@ -19,6 +19,3 @@ var Track = {
 		return this;
 	}
 };
-
-// current_track.artist = 'dog';
-// console.log(Track.now_playing());

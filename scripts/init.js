@@ -1,15 +1,13 @@
-  var firstRun = (localStorage['firstRun'] == 'true');
-  if (!firstRun) {
+  var firstRun = (localStorage['firstRun.0.3'] === undefined);
+  if (firstRun) {
     // Open the options page if this is the first run
-    localStorage['firstRun'] = 'true';
-      localStorage['notification_visible'] = false;
+    localStorage['firstRun.0.3'] = 'false';
+    localStorage['notification_visible'] = false;
     chrome.tabs.create({url: chrome.extension.getURL("options.html"), selected: true});
   }
 
   function history_listener() {
-    console.log('initiating history listener');
     chrome.history.onVisited.addListener(function(result) {
-      console.log('history');
       if (localStorage["last_visit_time"] !== undefined) {
         if (new Date().getTime() - localStorage["last_visit_time"] > 100) {
           // localStorage["most_recent_page"] = '';
@@ -27,13 +25,13 @@ function fetch_url(last_url, callback) {
     xhr.onreadystatechange = function(data) {
       if (xhr.readyState == 4) {
         if (xhr.status == 200) {
-          var data = xhr.responseText;
+          data = xhr.responseText;
           callback(data);
         } else {
           callback(null);
         }
       }
-    }
+    };
     // Note that any URL fetched here must be matched by a permission in
     // the manifest.json file!
     var url = last_url;
@@ -44,7 +42,6 @@ function fetch_url(last_url, callback) {
 function lyric_search(url1, callback) {
   var xhr = new XMLHttpRequest();
   var not_found = '<p id="songLyricsDiv">No lyrics found.</p>';
-  console.log('fetch new lyrics');
   xhr.onreadystatechange = function(data) {
     if (xhr.readyState == 4) {
       if (xhr.status == 200) {
@@ -83,43 +80,34 @@ function lyric_search(url1, callback) {
 }
 
 function createNotificationInstance() {
-  console.log('creating notificaiton');
-  // var notification = webkitNotifications.createHTMLNotification('notification.html'  // html url - can be relative
-  console.log(localStorage['notification_visible']);
   if (localStorage['notification_visible'] != 'true') {
     var notification = webkitNotifications.createHTMLNotification('notification.html');
     notification.show();
-    console.log('have called to show');
   }
 }
 
 function onRequest(request, sender, callback) {
-        if (request.action == 'fetch_url') {
-          fetch_url(request.url, callback);
-        }
+    if (request.action == 'fetch_url') {
+      fetch_url(request.url, callback);
+    }
     else if (request.action == 'set_tab_id') {
-      console.log('get tab id');
       chrome.tabs.getSelected(null, function(tab) {
         localStorage["tabID"] = tab.id;
         callback(tab.id);
       });
     }
     else if (request.action == 'player_action') {
-      console.log('player action from keyboard shortcut');
       chrome.tabs.sendRequest(parseInt(localStorage["tabID"]), {'action' : 'playback_action', 'type' : request.type},
         function(response) {
-          console.log('play/pause response');
           // popup_prep();
         }
       );
     }
     else if (request.action == 'create_notification') {
-      console.log('create notification instance');
       createNotificationInstance();
       callback();
     }
     else if (request.action == 'return_settings') {
-      console.log('return local storage object');
       callback(localStorage);
     }
     else if (request.action == 'lyric_search') {
