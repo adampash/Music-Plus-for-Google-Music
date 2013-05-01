@@ -1,3 +1,7 @@
+html, body {
+	overflow: hidden;
+}
+
 #popup, body {
 	height:149px;
 	width:300px;
@@ -59,14 +63,14 @@ body {
 #playPause.goog-flat-button-checked:hover {
 	background: no-repeat url(../images/sprites.png) -581px -428px;
 }
-		
+
 #playPause.goog-flat-button-checked {
 background: no-repeat url(../images/sprites.png) -300px -132px;
 }
 
 #rew.goog-flat-button {
 	background: no-repeat url(../images/sprites.png) -226px -337px;
-}		
+}
 
 #rew.goog-flat-button:hover {
 	background: no-repeat url(../images/sprites.png) -300px -428px;
@@ -193,8 +197,8 @@ background: no-repeat url(../images/sprites.png) -300px -132px;
 	height:147px;
 	background:white;
 	width:415px;
-	overflow-y:auto;
-	overflow-x:none;
+	overflow-y: none;
+	overflow-x: none;
 	position:absolute;
 	top:25px;
 	z-index:1000;
@@ -253,7 +257,7 @@ background: no-repeat url(../images/sprites.png) -300px -132px;
 	cursor:pointer;
 	height:18px;
 	-webkit-user-select: none;
-	
+
 }
 
 .ind_track:hover {
