@@ -16,7 +16,7 @@
     function popup_prep() {
       // $("#popup").html("Music is playing1");
       // localStorage["tabID"] = 'closed';
-      console.log(localStorage["tabID"]);
+      // console.log(localStorage["tabID"]);
       if (localStorage["tabID"] === undefined || localStorage["tabID"] == 'closed') {
         console.log("Open a new tab: " + localStorage["tabID"]);
         $('#artist').html('You need to <a href="#">open a new Google Play Music tab</a>.');
@@ -68,11 +68,6 @@
           }
         );
       }
-      // console.log("made it past response");
-      // console.log("Call again in 1 second");
-      // clearTimeout(timeout);
-      // timeout = setTimeout(popup_prep, 1000);
-      // console.log(CONTENT_SCRIPT_TAB_ID);
     }
 
     function set_status(status) {
@@ -137,11 +132,6 @@
       $('#loadingOverlay').toggle();
       $('.tab-text').text(decodeURIComponent(display_type));
       breadcrumb.push([type, id, display_type]);
-      // var url = $(obj).attr('title');
-      // // console.log($(obj).attr('title'));
-      // var type = "playlistSelected";
-      // var script = "'playlistSelected', this, {id: '" + url + "'}";
-      // script = script.replace(/&quote;/g, "'");
       if (id == '') {
         id = -1;
       }
@@ -180,8 +170,7 @@
               if (artist.artist.title == '') {
                 return;
               }
-              if (artist.artist.art.split('default_album_med').length > 1) artist.artist.art = 'play.google.com/music/default_album_med.png';
-              var row = '<div class="album_row artist" data-id="' + decodeURI(artist.artist.id) + '" data-title="' + decodeURI(artist.artist.title) + '"><img width="32" height="32" src="http://' + decodeURI(artist.artist.art) + '" /><b>' + decodeURIComponent(artist.artist.title) + '</b><br></div>';
+              var row = '<div class="album_row artist" data-id="' + decodeURI(artist.artist.id) + '" data-title="' + decodeURI(artist.artist.title) + '"><img width="64" height="32" src="http://' + decodeURI(artist.artist.art) + '" /><b>' + decodeURIComponent(artist.artist.title) + '</b><br></div>';
               $('#navigate').append(row);
             });
           }
@@ -191,7 +180,7 @@
           prep_nav();
         }
       );
-      console.log('request made');
+      console.log('new request made');
       $('#search').hide();
     }
 
@@ -205,7 +194,7 @@
       activate_search();
       breadcrumb.push(['', id, '']);
       // script_text = script_text.replace(/&quote;/g, "'");
-      console.log(id);
+      // console.log(id);
       chrome.tabs.sendRequest(parseInt(localStorage["tabID"]), {'action' : 'nav_to', 'id' : id, 'type' : 'albumSelected'},
         function(response) {
           $('#loadingOverlay').toggle();

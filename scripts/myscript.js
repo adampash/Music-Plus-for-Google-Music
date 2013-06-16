@@ -4,7 +4,7 @@ var notificaiton_html = 'popup.html';
 
 var consoleLog = function(msg){
 	// uncomment for "dev mode"
-	// console.log(msg);
+	console.log(msg);
 };
 
 // if (localStorage['download'] == 'true' && window.location.host == 'play.google.com') {
@@ -259,22 +259,24 @@ function nav_to(request, callback) {
 	else {
 		if (id != -1) {
 			consoleLog('get element by id');
-			element = document.getElementById(id);
+			if (type == 'artistSelected') {
+				element = $('[data-id="' + id + '"] .details .title')[0];
+			}
+			else {
+				element = $('[data-id="' + id + '"]')[0];
+			}
+			// element = document.getElementById(id);
 		}
 		else if (type == 'artists' || type == 'albums') {
-			element = $('#nav_collections li[data-type="' + type + '"]')[0];
+			console.log('arsits or albums');
+			element = $('#browse-tabs div[data-type="' + type + '"]')[0];
 		}
 		else {
 			consoleLog('get element by type');
 			element = document.getElementById(type);
 		}
 		if (type == 'albumSelected') {
-			if (id.split('*_*').length < 2) {
-				element = element.childNodes[0];
-			}
-			else {
-				element = element.childNodes[1];
-			}
+			element = $('[data-id="' + id + '"] .title')[0];
 		}
 		dispatchMouseEvent(element, 'click', true, true);
 	}
@@ -282,7 +284,7 @@ function nav_to(request, callback) {
 	consoleLog("navigate to " + type);
 	if (type == 'albums') {
 		var albums = '{"albums": [';
-		if ($('#browse-view-albums > .album-container').length === 0) {
+		if ($('#main .card').length === 0) {
 			consoleLog('no albums available');
 			last_nav_request = request;
 			last_callback = callback;
@@ -291,11 +293,11 @@ function nav_to(request, callback) {
 			}, 1000);
 			return false;
 		}
-		$('#browse-view-albums > .album-container').each(function(index, element) {
-			var title = $(element).find('.album-name').text();
-			var artist = $(element).find('.artist-name').text();
-			var art = $(element).find('.album-art').attr('src');
-			var id = $(element).attr('id');
+		$('#main .card').each(function(index, element) {
+			var title = $(element).find('.details .title').text();
+			var artist = $(element).find('.sub-title').text();
+			var art = $(element).find('.image-inner-wrapper img').attr('src');
+			var id = $(element).attr('data-id');
 			if (title === '') {
 				return;
 			}
@@ -307,19 +309,19 @@ function nav_to(request, callback) {
 	}
 	else if (type == 'albumSelected') {
 		consoleLog('you just clicked a specific album');
-		var album = $('.albumViewAlbumTitle').text();
-		var artist = $('.albumViewArtistTitle').text();
-		var art = $('img.albumViewImage.albumImage').attr('src');
+		var album = $('.breadcrumbs span:first').text();
+		var artist = $('.breadcrumbs span:last').text();
+		var art = $('.cover .card img.image').attr('src');
 		// consoleLog(art);
 		album = '{"album": {' +
 						'"title" : "' + encodeURI(album) + '",' +
 						'"artist" : "' + encodeURI(artist) + '",' +
 						'"art" : "' + encodeURI(art) + '",' +
 						'"tracks": [';
-		$('#songs .albumViewContainer .song-row').each(function(index, element) {
-			var title = $(element).find('div.fade-out-content').text();
-			var time = $(element).find('.albumViewDurationColumn').text();
-			var song_id = $(element).attr('id');
+		$('#main .song-row').each(function(index, element) {
+			var title = $(element).find('td[data-col="title"] .content').text();
+			var time = $(element).find('td[data-col="duration"]').text();
+			var song_id = $(element).attr('data-id');
 			album += '{"track":{"title" : "' + encodeURI(title) + '", "time" : "' + time + '", "song_id" : "' + song_id + '"}},';
 		});
 		album = album.slice(0, album.length - 1);
@@ -329,7 +331,7 @@ function nav_to(request, callback) {
 	else if (type == 'artists') {
 		consoleLog('artists selected');
 		var artists = '{"artists": [';
-		if ($('#browse-view-artists > .browseArtistContainer').length === 0) {
+		if ($('#main .card').length === 0) {
 			consoleLog('no artists available');
 			last_nav_request = request;
 			last_callback = callback;
@@ -338,10 +340,11 @@ function nav_to(request, callback) {
 			}, 1000);
 			return false;
 		}
-		$('#browse-view-artists > .browseArtistContainer').each(function(index,element) {
-			var artist = $(element).find(".browseArtistTitle > .fade-out-content").text();
-			var art = $(element).find('.browseArtistArtContainer > img.albumImage').attr('src');
-			var id = $(element).attr('id');
+		$('#main .card').each(function(index,element) {
+			var artist = $(element).find(".details .title").text();
+			var art = $(element).find('.image-inner-wrapper img').attr('src');
+			console.log("ART", art);
+			var id = $(element).attr('data-id');
 			artists += '{"artist":{"title" : "' + encodeURIComponent(artist) + '", "art" : "' + encodeURI(art) + '", "id" : "' + encodeURI(id) + '"}},';
 		});
 		artists = artists.slice(0, artists.length - 1);
@@ -350,13 +353,14 @@ function nav_to(request, callback) {
 	}
 	else if (type == "artistSelected") {
 		consoleLog('artist selected');
+		var artist = $('#breadcrumbs span.tab-text:first').text();
 		var albums = '{"albums": [';
-		$('.artistViewAlbumInfoContainer').each(function(index, element) {
-			var title = $(element).find('.albumViewAlbumTitle').text();
-			var artist = $(element).find('.albumViewArtistTitle').text();
-			var art = $(element).find('.albumViewImage').attr('src');
-			var id = index + '*_*' + title; //$(element).find('.albumViewAlbumTitle'); // need to figure this out; these don't have ids
-			$(element).attr('id', id);
+		$('.card').each(function(index, element) {
+			var title = $(element).find('.details .title').text();
+			var art = $(element).find('.image-inner-wrapper img').attr('src');
+			var id = $(element).attr('data-id'); //$(element).find('.albumViewAlbumTitle'); // need to figure this out; these don't have ids
+			console.log(id);
+			// $(element).attr('id', id);
 			if (title === '') {
 				return;
 			}
@@ -406,11 +410,13 @@ function onRequest(request, sender, callback) {
 			playback_action(request.type, callback);
 		}
 		else if (request.action == 'nav_to') {
+			console.log('NAV TO REQUEST');
 			nav_to(request, callback);
 		}
 		else if (request.action == 'select_and_play') {
 			consoleLog('handle select and play request');
-			var element = document.getElementById(request.song_id);
+			var element = $('tr[data-id="' + request.song_id + '"] .content')[0];
+			// console.log(request.song_id, element)
 			dispatchMouseEvent(element, 'click', true, true);
 			dispatchMouseEvent(element, 'dblclick', true, true);
 			callback();

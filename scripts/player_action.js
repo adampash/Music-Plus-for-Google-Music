@@ -20,7 +20,7 @@ function toggle_play(status) {
 		$("#playPause").attr('title', 'Pause');
 	}
 	else if (status == 'paused') {
-		console.log('paused');
+		// console.log('paused');
 		$('#playPause').removeClass('goog-flat-button-checked');
 		$('#song_indicator').addClass('paused-indicator');
 		$('#song_indicator').removeClass('playing-indicator');

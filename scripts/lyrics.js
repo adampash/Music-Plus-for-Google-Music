@@ -99,7 +99,7 @@ if(document.getElementById('lyrics').style.visibility == "hidden") less -= 299;
 
 document.getElementById('main').style.width = (winWidth-less)+'px';
 document.getElementById('lyrics').style.height = (winHeight-269)+'px';
-document.getElementById('breadcrumbs').style.width = (winWidth-less)+'px';
+// document.getElementById('breadcrumbs').style.width = (winWidth-less)+'px';
 // document.getElementById('songs_songHeaders').style.width = (winWidth-less)+'px';
 
 BG = document.getElementById('modalBG').style;
@@ -131,7 +131,7 @@ function toggleLyrics() {
     // document.getElementById('lyricsTab').style.width = '55px';
 		document.getElementById('main').style.width = (window.innerWidth-225)+'px';
 		// document.getElementById('songs_songHeaders').style.width = (window.innerWidth-225)+'px';
-		document.getElementById('breadcrumbs').style.width = (window.innerWidth-221)+'px';
+		// document.getElementById('breadcrumbs').style.width = (window.innerWidth-221)+'px';
 		localStorage['display_music_plus_lyrics'] = "false";
 	} else {
 		document.getElementById('lyrics').style.visibility = "visible";
@@ -141,7 +141,7 @@ function toggleLyrics() {
     // document.getElementById('lyricsTab').style.width = '295px';
 		document.getElementById('main').style.width = (window.innerWidth-523)+'px';
 		// document.getElementById('songs_songHeaders').style.width = (window.innerWidth-523)+'px';
-		document.getElementById('breadcrumbs').style.width = (window.innerWidth-523)+'px';
+		// document.getElementById('breadcrumbs').style.width = (window.innerWidth-523)+'px';
 		localStorage['display_music_plus_lyrics'] = "true";
 	}
 	$(window).resize();
@@ -200,15 +200,16 @@ document.getElementById('modalBG').style.visibility = "hidden";
 
 if (localStorage['lyrics'] == 'true' && window.location.host == 'play.google.com') {
 	$(document).ready(function(e) {
-		$('.menu-bar').append('<li><a><span class="nav-option" id="lyrics_toggle_button">Lyrics</span></a></li>');
-		$('#coloredBar').after('<div id="coloredBar222"></div>');
-		document.getElementById('coloredBar222').innerHTML += "<div id='lyricsToolbar' style=\"z-index:2; position:absolute; top:176px; right:17px; width:278px; height:22px; padding:0px; \"></div>";
+		$('#action_bar_container').append('<button class="button small" data-id="lyrics-toggle" id="lyrics_toggle_button">Lyrics</button>');
+		// $('#action_bar_container').append('<li><a><span class="nav-option" id="lyrics_toggle_button">Lyrics</span></a></li>');
+		$('#main').append('<div id="coloredBar222"></div>');
+		document.getElementById('coloredBar222').innerHTML += "<div id='lyricsToolbar' style=\"z-index:2; position:fixed; top:157px; right:17px; width:278px; height:22px; padding:0px; \"></div>";
 		document.getElementById('lyricsToolbar').innerHTML += "<img id='reloadLyrics' style='position:relative; top:2px; left:2px; width:18px; height:18px; visibility:hidden;' src='http://radicalpi.net/upload/gMusic/refresh.png'>";
 		document.getElementById('lyricsToolbar').innerHTML += "<img id='editLyrics' style='position:relative; top:2px; left:8px; width:18px; height:18px; visibility:hidden;' src='http://radicalpi.net/upload/gMusic/edit.png'>";
 		document.getElementById('lyricsToolbar').innerHTML += "<img id='editSettings' style='position:relative; top:2px; left:220px; width:18px; height:18px;' src='http://radicalpi.net/upload/gMusic/gear.png'>";
 
 
-		document.getElementById('coloredBar222').innerHTML += "<div id='lyrics' style=\"z-index:1; visibility:visible; position:absolute; top:176px; right:0px; padding:10px; padding-top:24px; width:275px; overflow-x:auto; overflow-y:scroll; background-color:#ffffff; line-height:16px; font-height:12px; text-align:center;\"><i style=\"color: #aaa\">Lyrics will display when a song is playing.</i></div>";
+		document.getElementById('coloredBar222').innerHTML += "<div id='lyrics' style=\"z-index:1; visibility:visible; position:absolute; top:5px; right:0px; padding:10px; padding-top:24px; width:275px; overflow-x:auto; overflow-y:scroll; background-color:#ffffff; line-height:16px; font-height:12px; text-align:center;\"><i style=\"color: #aaa\">Lyrics will display when a song is playing.</i></div>";
 
 		document.getElementById('coloredBar222').innerHTML += "<div id='modalBG' class='modal-dialog-bg' style='opacity:0.5; visibility:hidden;'></div>";
 
