@@ -377,26 +377,35 @@ function nav_to(request, callback) {
 
 
 function playback_action(type, callback) {
+	var $button;
 	if (type == 'playPause') {
-		element = document.getElementById('playPause');
+		$button = $('button[data-id="play-pause"]');
 	}
 	else if (type == 'nextSong') {
-		element = document.getElementById('ff');
+		$button = $('button[data-id="forward"]');
 	}
 	else if (type == 'prevSong') {
-		element = document.getElementById('rew');
+		$button = $('button[data-id="rewind"]');
 	}
 	else if (type == 'currently_playing') {
-		element = document.getElementById('playerSongInfo').childNodes[0];
+		// element = document.getElementById('playerSongInfo').childNodes[0];
+		$button = $('button[data-id="play-pause"]');
 	}
-	if ($(element).hasClass('goog-flat-button-disabled')) {
-		element = document.getElementById('start_shuffle_all');
-		dispatchMouseEvent(element, 'click', true, true);
+	if ($('button[data-id="play-pause"]').attr('disabled')) {
+		// console.log("instant mix!!", $('li[data-type="rd"]'));
+		$instant_mix = $('li[data-type="rd"]').click();
+		// console.log("instant mix", $('div[data-type="im"]').first('.radio-icon'));
+		setTimeout(function() {
+			$('div[data-type="im"] .radio-icon').first().click();
+		}, 1000);
+		// element = document.getElementById('start_shuffle_all');
+		// dispatchMouseEvent(element, 'click', true, true);
 	}
 	else {
-		dispatchMouseEvent(element, 'mouseover', true, true);
-		dispatchMouseEvent(element, 'mousedown', true, true);
-		dispatchMouseEvent(element, 'mouseup', true, true);
+		$button.click();
+		// dispatchMouseEvent(element, 'mouseover', true, true);
+		// dispatchMouseEvent(element, 'mousedown', true, true);
+		// dispatchMouseEvent(element, 'mouseup', true, true);
 	}
 	callback();
 }
