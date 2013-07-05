@@ -203,7 +203,7 @@ if (localStorage['lyrics'] == 'true' && window.location.host == 'play.google.com
 		$('#action_bar_container').append('<button class="button small" data-id="lyrics-toggle" id="lyrics_toggle_button">Lyrics</button>');
 		// $('#action_bar_container').append('<li><a><span class="nav-option" id="lyrics_toggle_button">Lyrics</span></a></li>');
 		$('#main').after('<div id="coloredBar222"></div>');
-		document.getElementById('coloredBar222').innerHTML += "<div id='lyricsToolbar' style=\"z-index:2; position:fixed; top:127px; right:7px; width:278px; height:22px; padding:0px; \"></div>";
+		document.getElementById('coloredBar222').innerHTML += "<div id='lyricsToolbar' style=\"z-index:2; position:fixed; top:157px; right:7px; width:278px; height:22px; padding:0px; \"></div>";
 		document.getElementById('lyricsToolbar').innerHTML += "<img id='reloadLyrics' style='position:relative; top:2px; left:2px; width:18px; height:18px; visibility:hidden;' src='http://radicalpi.net/upload/gMusic/refresh.png'>";
 		document.getElementById('lyricsToolbar').innerHTML += "<img id='editLyrics' style='position:relative; top:2px; left:8px; width:18px; height:18px; visibility:hidden;' src='http://radicalpi.net/upload/gMusic/edit.png'>";
 		document.getElementById('lyricsToolbar').innerHTML += "<img id='editSettings' style='position:relative; top:2px; left:220px; width:18px; height:18px;' src='http://radicalpi.net/upload/gMusic/gear.png'>";
