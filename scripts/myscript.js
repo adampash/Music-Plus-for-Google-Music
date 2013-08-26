@@ -43,7 +43,6 @@ function check_url() {
 	}
 	else if (localStorage['support'] == 'true') {
 		$(document).ready(function() {
-			// global_shortcuts();
 			ama_links();
 		});
 	}
@@ -445,7 +444,7 @@ function onRequest(request, sender, callback) {
 chrome.extension.onRequest.addListener(onRequest);
 
 
-// add amazon affiliate links to URLs
+// add amazon affiliate links to URLs if user has opted in to support
 function ama_links() {
 	consoleLog('ama links');
 	var allLinks = document.getElementsByTagName("a");
