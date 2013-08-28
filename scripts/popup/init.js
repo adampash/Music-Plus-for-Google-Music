@@ -206,7 +206,6 @@
           else {
             console.log(response);
             var album = $.parseJSON(response);
-            // console.log(album);
             $('#navigate').html(" ");
             $('#navigate').scrollTop(0);
             var album_page = '<div class="big_art" style="position:fixed; margin:10px;">' +

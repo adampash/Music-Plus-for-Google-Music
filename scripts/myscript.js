@@ -267,7 +267,7 @@ function nav_to(request, callback) {
 			// element = document.getElementById(id);
 		}
 		else if (type == 'artists' || type == 'albums') {
-			console.log('arsits or albums');
+			consoleLog('arsits or albums');
 			element = $('#browse-tabs div[data-type="' + type + '"]')[0];
 		}
 		else {
@@ -387,18 +387,13 @@ function playback_action(type, callback) {
 		$button = $('button[data-id="rewind"]');
 	}
 	else if (type == 'currently_playing') {
-		// element = document.getElementById('playerSongInfo').childNodes[0];
 		$button = $('button[data-id="play-pause"]');
 	}
 	if ($('button[data-id="play-pause"]').attr('disabled')) {
-		// console.log("instant mix!!", $('li[data-type="rd"]'));
 		$instant_mix = $('li[data-type="rd"]').click();
-		// console.log("instant mix", $('div[data-type="im"]').first('.radio-icon'));
 		setTimeout(function() {
 			$('div[data-type="im"] .radio-icon').first().click();
 		}, 1000);
-		// element = document.getElementById('start_shuffle_all');
-		// dispatchMouseEvent(element, 'click', true, true);
 	}
 	else {
 		$button.click();
