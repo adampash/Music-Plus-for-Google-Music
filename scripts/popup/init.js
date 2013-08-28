@@ -106,7 +106,8 @@
         else {
           $('.tab-text').text("My Library");
           $('#navigate').html('<div class="album_row bold artists" title="artists">Artists</div>' +
-          '<div class="album_row bold albums" title="albums">Albums</div>');
+          '<div class="album_row bold albums" title="albums">Albums</div>' + 
+          '<div class="album_row bold playlists" title="playlists">Playlists</div>');
           $("#navigate").slideDown();
           $('#close_nav').show();
           prep_nav();
@@ -135,13 +136,31 @@
       if (id == '') {
         id = -1;
       }
-      chrome.tabs.sendRequest(parseInt(localStorage["tabID"]), {'action' : 'nav_to', 'type' : type, 'id' : id, 'go_back' : go_back},
+      chrome.tabs.sendRequest(parseInt(localStorage["tabID"]), {'action' : 'nav_to', 'type' : type, 'id' : id, 'go_back' : go_back, title: display_type},
         function(response) {
           $('#loadingOverlay').toggle();
           if (chrome.extension.lastError) {
             chrome.tabs.create({url: "http://play.google.com/music/"});
             console.log('there was an error connecting to the tab');
             window.close();
+          }
+          else if (typeof response == 'object') {
+            if (response.playlist) {
+              console.log('playlist response', response);
+              var tracks = response.playlist.tracks;
+              var album_page = '<div class="big_art" style="position:fixed; margin:10px;">' +
+                                    '<img src="http://play.google.com/music/default_album_med.png" height="128" width="128">' +
+                                  '</div>' +
+                                  '<div class="track_list">';
+              $.each(tracks, function(index, track) {
+                album_page += '<div class="album_row ind_track" id="' + track.song_id + '">' + track.title + '</div>';
+              });
+              album_page += '</div>';
+              $('#navigate').scrollTop(0);
+              $('#navigate').html(album_page);
+              prep_nav();
+              $('.tab-text').text(decodeURI(response.playlist.title));
+            }
           }
           else if (response.indexOf('"albums":') != -1) {
             activate_search();
@@ -223,6 +242,38 @@
         }
       );
     }
+    
+    function fetch_playlists(id) {
+      console.log('fetch_playlists');
+      $('#loadingOverlay').toggle();
+      activate_search();
+      breadcrumb.push(['', id, '']);
+      chrome.tabs.sendRequest(parseInt(localStorage["tabID"]), {'action' : 'fetch_playlists'},
+        function(response) {
+          $('#loadingOverlay').toggle();
+          if (chrome.extension.lastError) {
+            chrome.tabs.create({url: "http://play.google.com/music/"});
+            console.log('there was an error connecting to the tab');
+            window.close();
+          }
+          else {
+            console.log(response);
+            var playlists = response;
+            $('#navigate').html(" ");
+            $('#navigate').scrollTop(0);
+            // var playlists_page = '';
+            // var row = '<div class="album_row album" data-id="' + escape(album.album.id) + '"><img width="32" height="32" src="http://' + decodeURI(album.album.art) + '" /><b>' + decodeURIComponent(album.album.title) + '</b><br>' + decodeURI(album.album.artist) + '</div>';
+            $.each(playlists, function(index, playlist) {
+              $('#navigate').append('<div class="album_row bold playlist" data-id="' + 
+                playlist.id + '" data-title="' + playlist.title + '">' + playlist.title + '</div>');
+            });
+            prep_nav();
+            $('#loadingOverlay').hide();
+            $('.tab-text').text('Playlists');
+          }
+        }
+      );
+    }
 
     function play_selected_track(obj) {
       console.log('play selected ');
@@ -246,6 +297,11 @@ function prep_nav() {
     .on('click', function() {
       fetch_nav_item('albums', '', 'Albums', false);
     });
+  
+  $('.album_row.playlists')
+    .on('click', function() {
+      fetch_playlists('playlists');
+    });
 
   $('.album_row.album')
     .on('click', function() {
@@ -255,6 +311,11 @@ function prep_nav() {
   $('.album_row.artist')
     .on('click', function() {
       fetch_nav_item('artistSelected', $(this).attr('data-id'), $(this).attr('data-title'), false);
+    });
+    
+  $('.album_row.playlist')
+    .on('click', function() {
+      fetch_nav_item('playlistSelected', $(this).attr('data-id'), $(this).attr('data-title'), false);
     });
 
   $('.album_row.ind_track')

@@ -4,14 +4,8 @@ var notificaiton_html = 'popup.html';
 
 var consoleLog = function(msg){
 	// uncomment for "dev mode"
-	console.log(msg);
+	// consoleLog(msg);
 };
-
-// if (localStorage['download'] == 'true' && window.location.host == 'play.google.com') {
-//  consoleLog('insert download button');
-//  insert_download_button();
-// }
-
 
 
 function restore_settings() {
@@ -231,8 +225,10 @@ function scrobble() {
 
 function set_popup(data, callback) {
 	Track.now_playing();
-	consoleLog(Track.status);
-	callback({'song_title': Track.song_title, 'artist' : Track.artist, 'album_art' : Track.album_art, 'current_time' : Track.current_time, 'total_time' : Track.total_time, 'status' : Track.status});
+	// consoleLog(Track.status);
+	callback({'song_title': Track.song_title, 'artist' : Track.artist, 
+						'album_art' : Track.album_art, 'current_time' : Track.current_time, 
+						'total_time' : Track.total_time, 'status' : Track.status});
 }
 
 
@@ -268,7 +264,7 @@ function nav_to(request, callback) {
 		}
 		else if (type == 'artists' || type == 'albums') {
 			consoleLog('arsits or albums');
-			element = $('#browse-tabs div[data-type="' + type + '"]')[0];
+			element = $('.tab-container div[data-type="' + type + '"]')[0];
 		}
 		else {
 			consoleLog('get element by type');
@@ -342,7 +338,6 @@ function nav_to(request, callback) {
 		$('#main .card').each(function(index,element) {
 			var artist = $(element).find(".details .title").text();
 			var art = $(element).find('.image-inner-wrapper img').attr('src');
-			console.log("ART", art);
 			var id = $(element).attr('data-id');
 			artists += '{"artist":{"title" : "' + encodeURIComponent(artist) + '", "art" : "' + encodeURI(art) + '", "id" : "' + encodeURI(id) + '"}},';
 		});
@@ -358,8 +353,6 @@ function nav_to(request, callback) {
 			var title = $(element).find('.details .title').text();
 			var art = $(element).find('.image-inner-wrapper img').attr('src');
 			var id = $(element).attr('data-id'); //$(element).find('.albumViewAlbumTitle'); // need to figure this out; these don't have ids
-			console.log(id);
-			// $(element).attr('id', id);
 			if (title === '') {
 				return;
 			}
@@ -370,8 +363,44 @@ function nav_to(request, callback) {
 		callback(albums);
 
 	}
+	else if (type == 'playlistSelected') {
+		consoleLog('playlist selected');
+		var album = $('.breadcrumbs span:first').text();
+		if (album != request.title) {
+			last_nav_request = request;
+			last_callback = callback;
+			setTimeout(function(request, callback) {
+				nav_to(last_nav_request, last_callback);
+			}, 1000);
+			return false;
+		}
+		response = {
+			playlist: {
+				title: album,
+				tracks: []
+			}
+		};
+		$('tr.song-row').each(function(index, element) {
+			$element = $(element);
+			var title = $element.find('td[data-col="title"] .content').text();
+			var artist = $element.find('td[data-col="artist"] .content').text();
+			var time = $element.find('td[data-col="duration"]').text();
+			var song_id = $element.attr('data-id');
+			response.playlist.tracks.push({title: title, time: time, song_id: song_id, artist: artist})
+		})
+		callback(response);
+	}
 	last_nav_request = request;
 	last_callback = callback;
+}
+
+function fetch_playlists(request, callback) {
+	var playlists = [];
+	$('ul#playlists li').each(function(index, element) {
+		var $element = $(element);
+		playlists.push({title: $element.text(), id: $element.prop('id')});
+	});
+	callback(playlists);
 }
 
 
@@ -413,13 +442,16 @@ function onRequest(request, sender, callback) {
 			playback_action(request.type, callback);
 		}
 		else if (request.action == 'nav_to') {
-			console.log('NAV TO REQUEST');
+			consoleLog('NAV TO REQUEST');
 			nav_to(request, callback);
+		}
+		else if (request.action == 'fetch_playlists') {
+			fetch_playlists(request, callback);
 		}
 		else if (request.action == 'select_and_play') {
 			consoleLog('handle select and play request');
 			var element = $('tr[data-id="' + request.song_id + '"] .content')[0];
-			// console.log(request.song_id, element)
+			// consoleLog(request.song_id, element)
 			dispatchMouseEvent(element, 'click', true, true);
 			dispatchMouseEvent(element, 'dblclick', true, true);
 			callback();
