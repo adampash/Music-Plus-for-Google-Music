@@ -2,7 +2,7 @@
 // @name           Google Music Player Enhancements
 // @namespace      http://www.danielslaughter.com/
 // @author         Daniel Slaughter
-// @version        7/3/2013
+// @version        7/31/2013
 // @include        http://play.google.com/music/listen*
 // @include        https://play.google.com/music/listen*
 // @match          http://play.google.com/music/listen*
@@ -20,7 +20,7 @@ if (localStorage['scrobble'] == 'true' && window.location.host == 'play.google.c
 		if (document.getElementById('gmp_script2')) {
 			return;
 		}
-		var version = '7/3/2013';
+		var version = '7/31/2013';
 		var pk = 'cba4cdbcecca1f51d6dbcecd9a151d6d';
 		var script = document.createElement('script');
 		script.id = 'gmp_script2';
