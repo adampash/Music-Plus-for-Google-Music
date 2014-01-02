@@ -1,4 +1,3 @@
-
 // @name			Google Music Lyrics
 // @version			0.9.3
 // @namespace		        http://www.radicalpi.net/
@@ -47,8 +46,8 @@ function fetchNowPlaying() {
 	}
 
 
-	newSongTitle = $("#playerSongTitle").text();
-	newSongArtist = $("#player-artist").text();
+	newSongArtist = document.getElementById('player-artist').innerHTML; 
+	newSongTitle = document.getElementById('playerSongTitle').innerHTML;
 	var artists = newSongArtist.split("/");
 	if(artists[0].indexOf("Various Artists") != -1) {artists[0] = artists[1];}
 		newSongArtist = artists[0];
