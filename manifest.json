@@ -19,7 +19,6 @@
                "scripts/track.js",
                "scripts/lyrics.js",
                "scripts/myscript.js",
-               "scripts/shortcuts.js",
                "scripts/scrobble.js"
              ]
     }
