@@ -118,14 +118,16 @@ function onRequest(request, sender, callback) {
 // Wire up the listener.
 chrome.extension.onRequest.addListener(onRequest);
 chrome.commands.onCommand.addListener(function(command) {
-  if (command == "toggle-play") {
-    player_action('playPause');
-  }
-  else if (command == "next-song") {
-    player_action('nextSong');
-  }
-  else if (command == "prev-song") {
-    player_action('prevSong');
+  if (localStorage['shortcuts'] == 'true') {
+    if (command == "toggle-play") {
+      player_action('playPause');
+    }
+    else if (command == "next-song") {
+      player_action('nextSong');
+    }
+    else if (command == "prev-song") {
+      player_action('prevSong');
+    }
   }
 });
 
