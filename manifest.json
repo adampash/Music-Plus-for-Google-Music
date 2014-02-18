@@ -42,19 +42,22 @@
   "commands": {
     "toggle-play": {
       "suggested_key": {
-        "default": "MediaPlayPause"
+        "default": "Ctrl+Shift+P",
+        "windows": "MediaPlayPause"
       },
       "description": "Play/Pause"
     },
     "next-song": {
       "suggested_key": {
-        "default": "MediaNextTrack"
+        "default": "Ctrl+Shift+Right",
+        "windows": "MediaNextTrack"
       },
       "description": "Play next song"
     },
     "prev-song": {
       "suggested_key": {
-        "default": "MediaPrevTrack"
+        "default": "Ctrl+Shift+Left",
+        "windows": "MediaPrevTrack"
       },
       "description": "Play previous song"
     }
