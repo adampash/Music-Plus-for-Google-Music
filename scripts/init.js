@@ -11,8 +11,7 @@
       if (localStorage["last_visit_time"] !== undefined) {
         if (new Date().getTime() - localStorage["last_visit_time"] > 100) {
           // localStorage["most_recent_page"] = '';
-            chrome.tabs.executeScript(null,
-                                     {code:"check_url()"});
+          chrome.tabs.executeScript(null, {code:"check_url()"});
         }
       }
       localStorage["last_visit_time"] = new Date().getTime();
@@ -118,6 +117,6 @@ function onRequest(request, sender, callback) {
       // Wire up the listener.
       chrome.extension.onRequest.addListener(onRequest);
 
-$('body').ready(function() {
+$('document').ready(function() {
   history_listener();
 });
