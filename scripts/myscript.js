@@ -152,7 +152,7 @@ function on_amazon(data) {
     var img = $(this).find('MediumImage > URL').text();
     var type = $(this).find('ItemAttributes > ProductTypeName').text();
     type = type.split('_')[2];
-    amazon_links = amazon_links + '<div class="amazon_alb album-container"><a href="' + url + '?tag=mixtame-20" target="_blank" class="fade-out-parent"><img src="' + img + '" height="124" width="124" class="albumImage" style="margin-bottom:-14px;" onmouseover="SJBpost(\'albumArtEnter\', this); onmouseout="SJBpost(\'albumArtLeave\', this);"" /><br /><span class="amazon_text browseAlbumTitle fade-out-content">' + title + '<br /></span><div class="fade-out-effect"></div><span class="browseSubtext" style="float:left;">[' + type + ']</span></div>';
+    amazon_links = amazon_links + '<div class="amazon_alb album-container"><a href="' + url + '?tag=adapas02-20" target="_blank" class="fade-out-parent"><img src="' + img + '" height="124" width="124" class="albumImage" style="margin-bottom:-14px;" onmouseover="SJBpost(\'albumArtEnter\', this); onmouseout="SJBpost(\'albumArtLeave\', this);"" /><br /><span class="amazon_text browseAlbumTitle fade-out-content">' + title + '<br /></span><div class="fade-out-effect"></div><span class="browseSubtext" style="float:left;">[' + type + ']</span></div>';
   });
   $('#amazon_links').html(amazon_links);
 
@@ -494,7 +494,8 @@ function ama_links() {
   }
 }
 
-var associateID = 'mixtame-20';
+// var associateID = 'mixtame-20';
+var associateID = 'adapas02-20';
 var ukAssociateID = 'adapas-21';
 
 function getASIN(href) {
