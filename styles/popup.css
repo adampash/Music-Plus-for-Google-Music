@@ -98,7 +98,7 @@ background: no-repeat url(../images/sprites.png) -300px -132px;
 }
 
 #time {
-	font-size: 0.75em;
+	font-size: 11px;
 	font-weight: bold;
 	line-height: 20px;
 	color:white;
