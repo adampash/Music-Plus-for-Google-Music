@@ -11,7 +11,7 @@ var Track = {
 	now_playing : function() {
 		this.song_title = $("#playerSongTitle").text();
 		this.artist = $("#player-artist").text();
-		this.album_art = "http://" + $("#playingAlbumArt").attr('src');
+		this.album_art = $("#playingAlbumArt").attr('src');
 		this.current_time = $("#time_container_current").text();
 		this.total_time = $("#time_container_duration").text();
 		var status = 'Play';
