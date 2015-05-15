@@ -407,16 +407,16 @@ function fetch_playlists(request, callback) {
 function playback_action(type, callback) {
   var $button;
   if (type == 'playPause') {
-    $button = $('button[data-id="play-pause"]');
+    $button = $('sj-icon-button[data-id="play-pause"]');
   }
   else if (type == 'nextSong') {
-    $button = $('button[data-id="forward"]');
+    $button = $('sj-icon-button[data-id="forward"]');
   }
   else if (type == 'prevSong') {
-    $button = $('button[data-id="rewind"]');
+    $button = $('sj-icon-button[data-id="rewind"]');
   }
   else if (type == 'currently_playing') {
-    $button = $('button[data-id="play-pause"]');
+    $button = $('sj-icon-button[data-id="play-pause"]');
   }
   if ($('button[data-id="play-pause"]').attr('disabled')) {
     $instant_mix = $('li[data-type="rd"]').click();
