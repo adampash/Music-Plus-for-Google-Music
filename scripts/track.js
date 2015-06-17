@@ -9,13 +9,13 @@ var Track = {
 	status : '',
 
 	now_playing : function() {
-		this.song_title = $("#playerSongTitle").text();
+		this.song_title = $("#player-song-title").text();
 		this.artist = $("#player-artist").text();
 		this.album_art = $("#playingAlbumArt").attr('src');
 		this.current_time = $("#time_container_current").text();
 		this.total_time = $("#time_container_duration").text();
 		var status = 'Play';
-		if ($('button[data-id="play-pause"]').hasClass('playing')) {
+		if ($('sj-icon-button[data-id="play-pause"]').hasClass('playing')) {
 			// console.log('this is playing');
 			status = 'Pause';
 		}
