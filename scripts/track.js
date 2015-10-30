@@ -15,7 +15,7 @@ var Track = {
 		this.current_time = $("#time_container_current").text();
 		this.total_time = $("#time_container_duration").text();
 		var status = 'Play';
-		if ($('sj-icon-button[data-id="play-pause"]').hasClass('playing')) {
+		if ($('paper-icon-button[data-id="play-pause"]').hasClass('playing')) {
 			// console.log('this is playing');
 			status = 'Pause';
 		}
